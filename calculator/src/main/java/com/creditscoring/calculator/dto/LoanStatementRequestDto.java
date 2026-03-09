@@ -1,12 +1,14 @@
 package com.creditscoring.calculator.dto;
 
-import com.creditscoring.calculator.validation.ValidAge;
+import com.creditscoring.calculator.validation.adult.IsAdult;
+import com.creditscoring.calculator.validation.maxage.ValidMaxAge;
 import jakarta.validation.constraints.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@ValidMaxAge
 public record LoanStatementRequestDto(
         @NotNull
         @Positive
@@ -30,9 +32,8 @@ public record LoanStatementRequestDto(
         @Email
         String email,
 
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
         @Past
-        @ValidAge
+        @IsAdult
         LocalDate birthdate,
 
         @NotBlank

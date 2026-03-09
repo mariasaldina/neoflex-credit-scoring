@@ -1,4 +1,4 @@
-package com.creditscoring.calculator.validation;
+package com.creditscoring.calculator.validation.maxage;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -8,11 +8,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ ElementType.FIELD })
+@Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = AgeValidator.class)
-public @interface ValidAge {
-    String message() default "Age must be between 18 and 75";
+@Constraint(validatedBy = MaxAgeValidator.class)
+public @interface ValidMaxAge {
+    String message() default "Borrower must not be older than 75 by the time they pay off the loan";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

@@ -21,5 +21,8 @@ public class CalculatorController {
         this.calculatorService = calculatorService;
     }
 
-
+    @PostMapping("/offers")
+    public List<LoanOfferDto> createOffers(@RequestBody LoanStatementRequestDto statement) {
+        return this.calculatorService.createOffers(statement.amount(), statement.term());
+    }
 }
