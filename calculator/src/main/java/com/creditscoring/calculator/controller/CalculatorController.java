@@ -1,8 +1,11 @@
 package com.creditscoring.calculator.controller;
 
+import com.creditscoring.calculator.dto.CreditDto;
 import com.creditscoring.calculator.dto.LoanOfferDto;
 import com.creditscoring.calculator.dto.LoanStatementRequestDto;
+import com.creditscoring.calculator.dto.ScoringDataDto;
 import com.creditscoring.calculator.service.CalculatorService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +25,12 @@ public class CalculatorController {
     }
 
     @PostMapping("/offers")
-    public List<LoanOfferDto> createOffers(@RequestBody LoanStatementRequestDto statement) {
+    public List<LoanOfferDto> createOffers(@Valid @RequestBody LoanStatementRequestDto statement) {
         return this.calculatorService.createOffers(statement.amount(), statement.term());
     }
+
+//    @PostMapping("/calc")
+//    public CreditDto scoring(@RequestBody ScoringDataDto scoringData) {
+//        return this.calculatorService.scoring(scoringData);
+//    }
 }

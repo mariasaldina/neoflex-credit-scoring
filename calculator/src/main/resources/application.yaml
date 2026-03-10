@@ -3,6 +3,15 @@ spring:
     name: calculator
 
 loan:
+  amount:
+    min: 20000
+    max: 10000000
+  term:
+    min: 6
+    max: 60
+  age:
+    min: 18
+    max: 75
   base-rate: 20
   insurance:
     price-percent: 0.5

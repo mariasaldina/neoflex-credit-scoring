@@ -1,7 +1,9 @@
 package com.creditscoring.calculator.service;
 
 import com.creditscoring.calculator.configuration.LoanProperties;
+import com.creditscoring.calculator.dto.CreditDto;
 import com.creditscoring.calculator.dto.LoanOfferDto;
+import com.creditscoring.calculator.dto.ScoringDataDto;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -99,4 +101,8 @@ public class CalculatorService {
                 .sorted(Comparator.comparing(LoanOfferDto::rate).reversed())
                 .toList();
     }
+
+//    public CreditDto scoring(ScoringDataDto scoringData) {
+//
+//    }
 }

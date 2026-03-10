@@ -8,9 +8,24 @@ import java.math.BigDecimal;
 @ConfigurationProperties(prefix = "loan")
 @Data
 public class LoanProperties {
-    private BigDecimal baseRate;
-    private Insurance insurance;
-    private SalaryClient salaryClient;
+
+    @Data
+    public static class Amount {
+        private BigDecimal min;
+        private BigDecimal max;
+    }
+
+    @Data
+    public static class Term {
+        private Integer min;
+        private Integer max;
+    }
+
+    @Data
+    public static class Age {
+        private Integer min;
+        private Integer max;
+    }
 
     @Data
     public static class Insurance {
@@ -22,4 +37,11 @@ public class LoanProperties {
     public static class SalaryClient {
         private BigDecimal rateReduction;
     }
+
+    private Amount amount;
+    private Term term;
+    private Age age;
+    private BigDecimal baseRate;
+    private Insurance insurance;
+    private SalaryClient salaryClient;
 }

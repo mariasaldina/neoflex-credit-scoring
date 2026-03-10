@@ -1,9 +1,10 @@
 package com.creditscoring.calculator.dto;
 
-import com.creditscoring.calculator.validation.adult.IsAdult;
+import com.creditscoring.calculator.validation.minage.ValidMinAge;
+import com.creditscoring.calculator.validation.amount.ValidAmount;
 import com.creditscoring.calculator.validation.maxage.ValidMaxAge;
+import com.creditscoring.calculator.validation.term.ValidTerm;
 import jakarta.validation.constraints.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,28 +13,30 @@ import java.time.LocalDate;
 public record LoanStatementRequestDto(
         @NotNull
         @Positive
-        @DecimalMin(value = "10000")
-        @DecimalMax(value = "10000000")
+        @ValidAmount
         BigDecimal amount,
 
         @NotNull
         @Positive
-        @Min(value = 3)
-        @Max(value = 60)
+        @ValidTerm
         Integer term,
 
         @NotBlank
+        @Size(min = 2, max = 30)
         String firstName,
         @NotBlank
+        @Size(min = 2, max = 30)
         String lastName,
+        @Size(min = 2, max = 30)
         String middleName,
 
         @NotBlank
-        @Email
+        @Pattern(regexp = "^[a-z0-9A-Z_!#$%&'*+/=?`{|}~^.-]+@[a-z0-9A-Z.-]+$")
         String email,
 
+        @NotNull
         @Past
-        @IsAdult
+        @ValidMinAge
         LocalDate birthdate,
 
         @NotBlank

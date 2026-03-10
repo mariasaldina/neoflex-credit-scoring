@@ -1,4 +1,4 @@
-package com.creditscoring.calculator.validation.adult;
+package com.creditscoring.calculator.validation.term;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -10,9 +10,9 @@ import java.lang.annotation.Target;
 
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = AdultValidator.class)
-public @interface IsAdult {
-    String message() default "Borrower must be older than 18";
+@Constraint(validatedBy = TermValidator.class)
+public @interface ValidTerm {
+    String message() default "Срок займа меньше минимального или больше максимального";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
