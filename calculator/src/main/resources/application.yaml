@@ -5,7 +5,7 @@ spring:
 loan:
   base-rate: 20
   insurance:
-    price: 100000
+    price-percent: 0.5
     rate-reduction: 3
   salary-client:
     rate-reduction: 1

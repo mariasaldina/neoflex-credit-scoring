@@ -14,7 +14,7 @@ public class LoanProperties {
 
     @Data
     public static class Insurance {
-        private BigDecimal price;
+        private BigDecimal pricePercent;
         private BigDecimal rateReduction;
     }
 

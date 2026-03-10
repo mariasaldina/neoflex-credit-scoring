@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Service
 public class CalculatorService {
@@ -38,7 +40,7 @@ public class CalculatorService {
             BigDecimal rate,
             Integer term,
             Boolean isInsuranceEnabled,
-            Boolean isSalaryClent
+            Boolean isSalaryClient
     ) {
         BigDecimal monthlyPayment = this.annuityMonthlyPayment(amount, rate, term);
 
@@ -50,7 +52,7 @@ public class CalculatorService {
                 monthlyPayment,
                 rate,
                 isInsuranceEnabled,
-                isSalaryClent
+                isSalaryClient
         );
     }
 
@@ -58,15 +60,43 @@ public class CalculatorService {
             BigDecimal amount,
             Integer term
     ) {
-        return List.of(
-                this.formLoanOffer(amount, loanProperties.getBaseRate(), term, false, false),
+        BigDecimal baseRate = loanProperties.getBaseRate();
+        BigDecimal insuranceRateReduction = loanProperties.getInsurance().getRateReduction();
+        BigDecimal salaryClientRateReduction = loanProperties.getSalaryClient().getRateReduction();
+        BigDecimal insurancePrice = amount
+                .multiply(loanProperties
+                        .getInsurance()
+                        .getPricePercent()
+                        .divide(new BigDecimal("100"), 10, RoundingMode.HALF_UP)
+                        .add(BigDecimal.ONE)
+                )
+                .setScale(2, RoundingMode.HALF_UP);
+
+        return Stream.of(
+                this.formLoanOffer(amount, baseRate, term, false, false),
                 this.formLoanOffer(
-                        amount,
-                        loanProperties.getBaseRate().subtract(loanProperties.getInsurance().getRateReduction()),
+                        insurancePrice,
+                        baseRate.subtract(insuranceRateReduction),
                         term,
                         true,
                         false
+                ),
+                this.formLoanOffer(
+                        amount,
+                        baseRate.subtract(salaryClientRateReduction),
+                        term,
+                        false,
+                        true
+                ),
+                this.formLoanOffer(
+                        insurancePrice,
+                        baseRate.subtract(insuranceRateReduction).subtract(salaryClientRateReduction),
+                        term,
+                        true,
+                        true
                 )
-        );
+        )
+                .sorted(Comparator.comparing(LoanOfferDto::rate).reversed())
+                .toList();
     }
 }
