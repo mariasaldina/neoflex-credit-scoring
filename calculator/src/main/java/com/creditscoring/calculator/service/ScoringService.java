@@ -7,6 +7,8 @@ import com.creditscoring.calculator.enums.Gender;
 import com.creditscoring.calculator.enums.MaritalStatus;
 import com.creditscoring.calculator.enums.Position;
 import com.creditscoring.calculator.exceptions.ScoringException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,6 +19,7 @@ import java.time.Period;
 @Service
 public class ScoringService {
     private final ScoringProperties scoringProperties;
+    private final Logger logger = LoggerFactory.getLogger(ScoringService.class);
 
     public ScoringService(
             ScoringProperties scoringProperties
@@ -25,20 +28,26 @@ public class ScoringService {
     }
 
     private BigDecimal employmentStatusRule(EmploymentStatus status) {
+        BigDecimal rate;
         switch (status) {
-            case SELF_EMPLOYED -> { return scoringProperties.employment().status().selfEmployedRate(); }
-            case BUSINESS_OWNER -> { return scoringProperties.employment().status().businessOwnerRate(); }
+            case SELF_EMPLOYED -> { rate = scoringProperties.employment().status().selfEmployedRate(); }
+            case BUSINESS_OWNER -> { rate = scoringProperties.employment().status().businessOwnerRate(); }
             case UNEMPLOYED -> { throw new ScoringException("Заёмщик должен быть трудоустроен"); }
-            default -> { return BigDecimal.ZERO; }
+            default -> { rate = BigDecimal.ZERO; }
         }
+        logger.debug("\nВлияние рабочего статуса на ставку: {}\n", rate);
+        return rate;
     }
 
     private BigDecimal employmentPositionRule(Position position) {
+        BigDecimal rate;
         switch (position) {
-            case MIDDLE_MANAGER -> { return scoringProperties.employment().position().middleManagerRate(); }
-            case TOP_MANAGER -> { return scoringProperties.employment().position().topManagerRate(); }
-            default -> { return BigDecimal.ZERO; }
+            case MIDDLE_MANAGER -> { rate = scoringProperties.employment().position().middleManagerRate(); }
+            case TOP_MANAGER -> { rate = scoringProperties.employment().position().topManagerRate(); }
+            default -> { rate = BigDecimal.ZERO; }
         }
+        logger.debug("\nВлияние позиции на работе на ставку: {}\n", rate);
+        return rate;
     }
 
     private BigDecimal salaryRule(BigDecimal salary, BigDecimal amount) {
@@ -52,11 +61,14 @@ public class ScoringService {
     }
 
     private BigDecimal maritalStatusRule(MaritalStatus status) {
+        BigDecimal rate;
         switch (status) {
-            case MARRIED -> { return scoringProperties.maritalStatus().marriedRate(); }
-            case DIVORCED -> { return scoringProperties.maritalStatus().divorcedRate(); }
-            default -> { return BigDecimal.ZERO; }
+            case MARRIED -> { rate = scoringProperties.maritalStatus().marriedRate(); }
+            case DIVORCED -> { rate = scoringProperties.maritalStatus().divorcedRate(); }
+            default -> { rate = BigDecimal.ZERO; }
         }
+        logger.debug("\nВлияние семейного положения на ставку: {}\n", rate);
+        return rate;
     }
 
     private BigDecimal demographicsRule(Gender gender, Integer age) {
@@ -64,6 +76,8 @@ public class ScoringService {
                 .filter(rule -> rule.gender() == null || rule.gender() == gender)
                 .filter(rule -> rule.minAge() == null || age >= rule.minAge())
                 .filter(rule -> rule.maxAge() == null || age <= rule.maxAge())
+                .peek(rule ->
+                        logger.debug("\nПрименено демографическое правило {}\n", rule))
                 .map(ScoringProperties.DemographicRule::rate)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }

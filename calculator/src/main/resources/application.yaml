@@ -1,6 +1,10 @@
 spring:
   application:
     name: calculator
+logging:
+  level:
+    root: INFO
+    com.creditscoring.calculator: DEBUG
 
 loan:
   base-rate: 20

@@ -5,12 +5,13 @@ import com.creditscoring.calculator.dto.CreditDto;
 import com.creditscoring.calculator.dto.LoanOfferDto;
 import com.creditscoring.calculator.dto.PaymentScheduleElementDto;
 import com.creditscoring.calculator.dto.ScoringDataDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -20,13 +21,17 @@ import java.util.stream.Stream;
 public class CalculatorService {
     private final LoanProperties loanProperties;
     private final ScoringService scoringService;
+    private final AnnuityModelService annuityModelService;
+    private final Logger logger = LoggerFactory.getLogger(CalculatorService.class);
 
     public CalculatorService(
             LoanProperties loanProperties,
-            ScoringService scoringService
+            ScoringService scoringService,
+            AnnuityModelService annuityModelService
     ) {
         this.loanProperties = loanProperties;
         this.scoringService = scoringService;
+        this.annuityModelService = annuityModelService;
     }
 
     private BigDecimal getInsuranceRate(BigDecimal rate) {
@@ -38,7 +43,7 @@ public class CalculatorService {
     }
 
     private BigDecimal getInsuranceAmount(BigDecimal amount) {
-        return amount
+        BigDecimal insuranceAmount = amount
                 .multiply(loanProperties
                         .insurance()
                         .pricePercent()
@@ -46,20 +51,8 @@ public class CalculatorService {
                         .add(BigDecimal.ONE)
                 )
                 .setScale(2, RoundingMode.HALF_UP);
-    }
-
-    private BigDecimal annuityMonthlyPayment(
-            BigDecimal amount,
-            BigDecimal rate,
-            Integer term
-    ) {
-        BigDecimal monthlyRate = rate.divide(new BigDecimal("1200"), 10, RoundingMode.HALF_UP);
-        BigDecimal rateMultiplier = monthlyRate.add(BigDecimal.ONE).pow(term);
-
-        return amount
-                .multiply(monthlyRate.multiply(rateMultiplier)
-                        .divide(rateMultiplier.subtract(BigDecimal.ONE), 10, RoundingMode.HALF_UP))
-                .setScale(2, RoundingMode.HALF_UP);
+        logger.debug("\nСумма кредита вместе со страховкой: {}\n", insuranceAmount);
+        return insuranceAmount;
     }
 
     private LoanOfferDto formLoanOffer (
@@ -69,7 +62,7 @@ public class CalculatorService {
             Boolean isInsuranceEnabled,
             Boolean isSalaryClient
     ) {
-        BigDecimal monthlyPayment = this.annuityMonthlyPayment(amount, rate, term);
+        BigDecimal monthlyPayment = annuityModelService.monthlyPayment(amount, rate, term);
 
         return new LoanOfferDto(
                 UUID.randomUUID(),
@@ -88,11 +81,12 @@ public class CalculatorService {
             Integer term
     ) {
         BigDecimal baseRate = loanProperties.baseRate();
+        BigDecimal insuranceAmount = getInsuranceAmount(amount);
 
         return Stream.of(
                 this.formLoanOffer(amount, baseRate, term, false, false),
                 this.formLoanOffer(
-                        getInsuranceAmount(amount),
+                        insuranceAmount,
                         getInsuranceRate(baseRate),
                         term,
                         true,
@@ -106,7 +100,7 @@ public class CalculatorService {
                         true
                 ),
                 this.formLoanOffer(
-                        getInsuranceAmount(amount),
+                        insuranceAmount,
                         getInsuranceRate(getSalaryClientRate(baseRate)),
                         term,
                         true,
@@ -115,36 +109,6 @@ public class CalculatorService {
         )
                 .sorted(Comparator.comparing(LoanOfferDto::rate).reversed())
                 .toList();
-    }
-
-    private List<PaymentScheduleElementDto> annuityPaymentSchedule(
-            Integer term,
-            BigDecimal rate,
-            BigDecimal monthlyPayment,
-            LocalDate start
-    ) {
-        List<PaymentScheduleElementDto> payments = new ArrayList<>();
-
-        LocalDate date = start;
-        BigDecimal debt = monthlyPayment.multiply(new BigDecimal(term));
-        BigDecimal monthlyRate = rate.divide(new BigDecimal("1200"), 10, RoundingMode.HALF_UP);
-        for (int i = 0; i < term; ++i) {
-            BigDecimal interestPayment = debt.multiply(monthlyRate);
-            BigDecimal debtPayment = monthlyPayment.subtract(interestPayment);
-            debt = debt.subtract(monthlyPayment);
-            date = date.plusMonths(1);
-
-            payments.add(new PaymentScheduleElementDto(
-                    i + 1,
-                    date,
-                    monthlyPayment,
-                    interestPayment,
-                    debtPayment,
-                    debt
-            ));
-        }
-
-        return payments;
     }
 
     public CreditDto calculateCredit(ScoringDataDto scoringData) {
@@ -164,13 +128,13 @@ public class CalculatorService {
             rate = getInsuranceRate(rate);
         }
 
-        BigDecimal monthlyPayment = this.annuityMonthlyPayment(
+        BigDecimal monthlyPayment = annuityModelService.monthlyPayment(
                 amount,
                 rate,
                 scoringData.term()
         );
 
-        List<PaymentScheduleElementDto> schedule = annuityPaymentSchedule(
+        List<PaymentScheduleElementDto> schedule = annuityModelService.paymentSchedule(
                 scoringData.term(),
                 rate,
                 monthlyPayment,
