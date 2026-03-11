@@ -1,22 +1,22 @@
 package com.creditscoring.calculator.validation.term;
 
-import com.creditscoring.calculator.configuration.LoanProperties;
+import com.creditscoring.calculator.configuration.PrescoringProperties;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 public class TermValidator implements ConstraintValidator<ValidTerm, Integer> {
 
-    private final LoanProperties loanProperties;
+    private final PrescoringProperties prescoringProperties;
 
     public TermValidator(
-            LoanProperties loanProperties
+            PrescoringProperties prescoringProperties
     ) {
-        this.loanProperties = loanProperties;
+        this.prescoringProperties = prescoringProperties;
     }
 
     @Override
     public boolean isValid(Integer term, ConstraintValidatorContext context) {
         if (term == null) return false;
-        return term >= loanProperties.getTerm().getMin() && term <= loanProperties.getTerm().getMax();
+        return term >= prescoringProperties.term().min() && term <= prescoringProperties.term().max();
     }
 }

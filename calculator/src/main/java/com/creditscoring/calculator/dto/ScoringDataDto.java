@@ -5,6 +5,7 @@ import com.creditscoring.calculator.enums.MaritalStatus;
 import com.creditscoring.calculator.validation.minage.ValidMinAge;
 import com.creditscoring.calculator.validation.amount.ValidAmount;
 import com.creditscoring.calculator.validation.term.ValidTerm;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -53,6 +54,7 @@ public record ScoringDataDto(
         @PositiveOrZero
         Integer dependentAmount,
 
+        @Valid
         @NotNull
         EmploymentDto employment,
 

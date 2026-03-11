@@ -6,42 +6,20 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.math.BigDecimal;
 
 @ConfigurationProperties(prefix = "loan")
-@Data
-public class LoanProperties {
+public record LoanProperties(
 
-    @Data
-    public static class Amount {
-        private BigDecimal min;
-        private BigDecimal max;
-    }
+        BigDecimal baseRate,
+        Insurance insurance,
+        SalaryClient salaryClient
 
-    @Data
-    public static class Term {
-        private Integer min;
-        private Integer max;
-    }
+) {
 
-    @Data
-    public static class Age {
-        private Integer min;
-        private Integer max;
-    }
+    public record Insurance(
+            BigDecimal pricePercent,
+            BigDecimal rate
+    ) {}
 
-    @Data
-    public static class Insurance {
-        private BigDecimal pricePercent;
-        private BigDecimal rateReduction;
-    }
-
-    @Data
-    public static class SalaryClient {
-        private BigDecimal rateReduction;
-    }
-
-    private Amount amount;
-    private Term term;
-    private Age age;
-    private BigDecimal baseRate;
-    private Insurance insurance;
-    private SalaryClient salaryClient;
+    public record SalaryClient(
+            BigDecimal rate
+    ) {}
 }

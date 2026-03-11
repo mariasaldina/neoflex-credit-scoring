@@ -29,8 +29,8 @@ public class CalculatorController {
         return this.calculatorService.createOffers(statement.amount(), statement.term());
     }
 
-//    @PostMapping("/calc")
-//    public CreditDto scoring(@RequestBody ScoringDataDto scoringData) {
-//        return this.calculatorService.scoring(scoringData);
-//    }
+    @PostMapping("/calc")
+    public CreditDto calculateCredit(@Valid @RequestBody ScoringDataDto scoringData) {
+        return this.calculatorService.calculateCredit(scoringData);
+    }
 }

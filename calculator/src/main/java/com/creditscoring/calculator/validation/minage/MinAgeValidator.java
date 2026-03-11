@@ -1,6 +1,6 @@
 package com.creditscoring.calculator.validation.minage;
 
-import com.creditscoring.calculator.configuration.LoanProperties;
+import com.creditscoring.calculator.configuration.PrescoringProperties;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -9,12 +9,12 @@ import java.time.Period;
 
 public class MinAgeValidator implements ConstraintValidator<ValidMinAge, LocalDate> {
 
-    private final LoanProperties loanProperties;
+    private final PrescoringProperties prescoringProperties;
 
     public MinAgeValidator(
-            LoanProperties loanProperties
+            PrescoringProperties prescoringProperties
     ) {
-        this.loanProperties = loanProperties;
+        this.prescoringProperties = prescoringProperties;
     }
 
     @Override
@@ -22,6 +22,6 @@ public class MinAgeValidator implements ConstraintValidator<ValidMinAge, LocalDa
         if (birthdate == null) return false;
 
         int age = Period.between(birthdate, LocalDate.now()).getYears();
-        return age >= loanProperties.getAge().getMin();
+        return age >= prescoringProperties.age().min();
     }
 }

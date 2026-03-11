@@ -1,6 +1,6 @@
 package com.creditscoring.calculator.validation.maxage;
 
-import com.creditscoring.calculator.configuration.LoanProperties;
+import com.creditscoring.calculator.configuration.PrescoringProperties;
 import com.creditscoring.calculator.dto.LoanStatementRequestDto;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -10,12 +10,12 @@ import java.time.Period;
 
 public class MaxAgeValidator implements ConstraintValidator<ValidMaxAge, LoanStatementRequestDto> {
 
-    private final LoanProperties loanProperties;
+    private final PrescoringProperties prescoringProperties;
 
     public MaxAgeValidator(
-            LoanProperties loanProperties
+            PrescoringProperties prescoringProperties
     ) {
-        this.loanProperties = loanProperties;
+        this.prescoringProperties = prescoringProperties;
     }
 
     @Override
@@ -26,6 +26,6 @@ public class MaxAgeValidator implements ConstraintValidator<ValidMaxAge, LoanSta
 
         LocalDate payOffDate = LocalDate.now().plusMonths(statement.term());
         int ageAfterPayOff = Period.between(statement.birthdate(), payOffDate).getYears();
-        return ageAfterPayOff <= loanProperties.getAge().getMax();
+        return ageAfterPayOff <= prescoringProperties.age().max();
     }
 }
