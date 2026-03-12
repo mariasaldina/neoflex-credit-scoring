@@ -9,7 +9,7 @@ logging:
 loan:
   base-rate: 20
   insurance:
-    price-percent: 0.5
+    price-percent: 5
     rate: -3
   salary-client:
     rate: -1

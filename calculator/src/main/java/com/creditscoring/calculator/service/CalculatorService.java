@@ -1,6 +1,7 @@
 package com.creditscoring.calculator.service;
 
 import com.creditscoring.calculator.configuration.LoanProperties;
+import com.creditscoring.calculator.domain.FullPaymentData;
 import com.creditscoring.calculator.dto.CreditDto;
 import com.creditscoring.calculator.dto.LoanOfferDto;
 import com.creditscoring.calculator.dto.PaymentScheduleElementDto;
@@ -63,11 +64,14 @@ public class CalculatorService {
             Boolean isSalaryClient
     ) {
         BigDecimal monthlyPayment = annuityModelService.monthlyPayment(amount, rate, term);
+        BigDecimal totalAmount = annuityModelService
+                .paymentSchedule(term, rate, amount, monthlyPayment, LocalDate.now())
+                .psk();
 
         return new LoanOfferDto(
                 UUID.randomUUID(),
                 amount,
-                monthlyPayment.multiply(new BigDecimal(term)),
+                totalAmount,
                 term,
                 monthlyPayment,
                 rate,
@@ -134,9 +138,10 @@ public class CalculatorService {
                 scoringData.term()
         );
 
-        List<PaymentScheduleElementDto> schedule = annuityModelService.paymentSchedule(
+        FullPaymentData paymentData = annuityModelService.paymentSchedule(
                 scoringData.term(),
                 rate,
+                amount,
                 monthlyPayment,
                 LocalDate.now()
         );
@@ -146,10 +151,10 @@ public class CalculatorService {
                 scoringData.term(),
                 monthlyPayment,
                 rate,
-                monthlyPayment.multiply(new BigDecimal(scoringData.term())),
+                paymentData.psk(),
                 scoringData.isInsuranceEnabled(),
                 scoringData.isSalaryClient(),
-                schedule
+                paymentData.paymentSchedule()
         );
     }
 }
