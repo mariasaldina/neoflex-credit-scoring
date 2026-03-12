@@ -7,10 +7,12 @@ import com.creditscoring.calculator.validation.amount.ValidAmount;
 import com.creditscoring.calculator.validation.term.ValidTerm;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Builder
 public record ScoringDataDto(
         @NotNull
         @Positive

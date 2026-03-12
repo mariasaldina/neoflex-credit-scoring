@@ -4,7 +4,6 @@ import com.creditscoring.calculator.configuration.LoanProperties;
 import com.creditscoring.calculator.domain.FullPaymentData;
 import com.creditscoring.calculator.dto.CreditDto;
 import com.creditscoring.calculator.dto.LoanOfferDto;
-import com.creditscoring.calculator.dto.PaymentScheduleElementDto;
 import com.creditscoring.calculator.dto.ScoringDataDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

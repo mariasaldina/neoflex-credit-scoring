@@ -1,6 +1,7 @@
 package com.creditscoring.calculator.advice;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +22,10 @@ public class GlobalExceptionHandler {
             Instant timestamp
     ) {}
 
+    private ApiError createApiError(HttpStatusCode status, String message, List<String> details) {
+        return new ApiError(status.value(), message, details, Instant.now());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleValidationExceptions(MethodArgumentNotValidException e) {
@@ -29,22 +34,20 @@ public class GlobalExceptionHandler {
                 .map(f -> f.getField() + ": " + f.getDefaultMessage())
                 .toList();
 
-        return new ApiError(
-                HttpStatus.BAD_REQUEST.value(),
+        return createApiError(
+                HttpStatus.BAD_REQUEST,
                 "Ошибка прескоринга",
-                errors,
-                Instant.now()
+                errors
         );
     }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ApiError> handleStatusExceptions(ResponseStatusException e) {
         return ResponseEntity.status(e.getStatusCode()).body(
-                new ApiError(
-                        e.getStatusCode().value(),
+                createApiError(
+                        e.getStatusCode(),
                         e.getMessage(),
-                        e.getReason() != null ? List.of(e.getReason()) : List.of(),
-                        Instant.now()
+                        e.getReason() != null ? List.of(e.getReason()) : List.of()
             )
         );
     }
@@ -52,11 +55,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleAllExceptions(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                new ApiError(
-                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                createApiError(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
                         "Внутренняя ошибка сервера",
-                        List.of(e.getMessage()),
-                        Instant.now()
+                        List.of()
                 )
         );
     }
