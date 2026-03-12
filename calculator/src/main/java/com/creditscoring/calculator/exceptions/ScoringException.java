@@ -1,11 +1,15 @@
 package com.creditscoring.calculator.exceptions;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.server.ResponseStatusException;
 
-@ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-public class ScoringException extends RuntimeException {
+public class ScoringException extends ResponseStatusException {
     public ScoringException(String message) {
-        super(message);
+        super(HttpStatus.UNPROCESSABLE_ENTITY, message);
+    }
+
+    @Override
+    public String getMessage() {
+        return "Ошибка скоринга"; // всегда одно сообщение
     }
 }
