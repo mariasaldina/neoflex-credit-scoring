@@ -53,24 +53,29 @@ public class AnnuityModelService {
                             new BigDecimal(daysInYear).multiply(new BigDecimal("100")),
                             10,
                             RoundingMode.HALF_UP
-                    );
+                    )
+                    .setScale(2, RoundingMode.HALF_UP);
 
-            BigDecimal totalPayment = i != term - 1
-                    ? monthlyPayment
-                    : interestPayment.add(debt).setScale(2, RoundingMode.HALF_UP);
-            BigDecimal debtPayment = totalPayment.subtract(interestPayment);
-            debt = i != term - 1
-                    ? debt.subtract(debtPayment)
-                    : BigDecimal.ZERO;
+            BigDecimal totalPayment;
+            BigDecimal debtPayment;
+            if (i != term - 1) {
+                totalPayment = monthlyPayment;
+                debtPayment = totalPayment.subtract(interestPayment);
+                debt = debt.subtract(debtPayment);
+            } else {
+                totalPayment = interestPayment.add(debt);
+                debtPayment = debt;
+                debt = BigDecimal.ZERO;
+            }
             prevPaymentDate = curPaymentDate;
 
             payments.add(new PaymentScheduleElementDto(
                     i + 1,
                     prevPaymentDate,
-                    totalPayment.setScale(2, RoundingMode.HALF_UP),
-                    interestPayment.setScale(2, RoundingMode.HALF_UP),
-                    debtPayment.setScale(2, RoundingMode.HALF_UP),
-                    debt.setScale(2, RoundingMode.HALF_UP)
+                    totalPayment,
+                    interestPayment,
+                    debtPayment,
+                    debt
             ));
 
             psk = psk.add(totalPayment);
