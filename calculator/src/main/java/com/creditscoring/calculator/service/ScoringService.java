@@ -51,10 +51,13 @@ public class ScoringService {
     }
 
     private BigDecimal salaryRule(BigDecimal salary, BigDecimal amount) {
+        BigDecimal ratio = scoringProperties.employment().maxLoanToSalariesRatio();
         if (amount
                 .divide(salary, 10, RoundingMode.HALF_UP)
-                .compareTo(scoringProperties.employment().maxLoanToSalariesRatio()) > 0) {
-            throw new ScoringException("Сумма займа превышает 24 заработные платы");
+                .compareTo(ratio) > 0) {
+            throw new ScoringException(
+                    String.format("Сумма займа превышает %b заработные платы", ratio)
+            );
         } else {
             return BigDecimal.ZERO;
         }

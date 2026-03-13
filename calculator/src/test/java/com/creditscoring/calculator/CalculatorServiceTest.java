@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -51,6 +52,27 @@ public class CalculatorServiceTest {
         );
     }
 
+    private void assertOfferExists(
+            List<LoanOfferDto> offers,
+            Boolean isInsuranceEnabled,
+            Boolean isSalaryClient,
+            String expectedRate
+    ) {
+        LoanOfferDto offer = offers.stream()
+                .filter(o ->
+                        o.isInsuranceEnabled() == isInsuranceEnabled && o.isSalaryClient() == isSalaryClient)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError(
+                        String.format(
+                            "Предложение с isInsuranceEnabled = %b и isSalaryClient = %b не найдено",
+                            isInsuranceEnabled,
+                            isSalaryClient
+                        )
+                ));
+
+        assertThat(offer.rate()).isEqualByComparingTo(expectedRate);
+    }
+
     @Test
     void testCreateOffers() {
         BigDecimal amount = new BigDecimal("100000");
@@ -66,26 +88,11 @@ public class CalculatorServiceTest {
 
         List<LoanOfferDto> offers = calculatorService.createOffers(amount, term);
 
-        assertAll(
-                () -> assertEquals(4, offers.size()),
-
-                () -> assertTrue(new BigDecimal("20").compareTo(offers.get(0).rate()) == 0),
-                () -> assertTrue(new BigDecimal("19").compareTo(offers.get(1).rate()) == 0),
-                () -> assertTrue(new BigDecimal("17").compareTo(offers.get(2).rate()) == 0),
-                () -> assertTrue(new BigDecimal("16").compareTo(offers.get(3).rate()) == 0),
-
-                () -> assertFalse(offers.get(0).isInsuranceEnabled()),
-                () -> assertFalse(offers.get(0).isSalaryClient()),
-
-                () -> assertFalse(offers.get(1).isInsuranceEnabled()),
-                () -> assertTrue(offers.get(1).isSalaryClient()),
-
-                () -> assertTrue(offers.get(2).isInsuranceEnabled()),
-                () -> assertFalse(offers.get(2).isSalaryClient()),
-
-                () -> assertTrue(offers.get(3).isInsuranceEnabled()),
-                () -> assertTrue(offers.get(3).isSalaryClient())
-        );
+        assertThat(offers).hasSize(4);
+        assertOfferExists(offers, false, false, "20");
+        assertOfferExists(offers, false, true, "19");
+        assertOfferExists(offers, true, false, "17");
+        assertOfferExists(offers, true, true, "16");
     }
 
     @Test
@@ -111,8 +118,8 @@ public class CalculatorServiceTest {
         );
 
         assertAll(
-                () -> assertTrue(new BigDecimal("105000").compareTo(credit.amount()) == 0),
-                () -> assertTrue(new BigDecimal("17").compareTo(credit.rate()) == 0)
+                () -> assertThat(credit.amount()).isEqualByComparingTo("105000"),
+                () -> assertThat(credit.rate()).isEqualByComparingTo("17")
         );
     }
 }

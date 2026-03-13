@@ -10,6 +10,6 @@ public class ScoringException extends ResponseStatusException {
 
     @Override
     public String getMessage() {
-        return "Ошибка скоринга"; // всегда одно сообщение
+        return "Ошибка скоринга";
     }
 }

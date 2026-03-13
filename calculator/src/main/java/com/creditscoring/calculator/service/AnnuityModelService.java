@@ -78,24 +78,4 @@ public class AnnuityModelService {
 
         return new FullPaymentData(payments, psk);
     }
-
-//    public BigDecimal getPsk(
-//            Integer term,
-//            BigDecimal rate,
-//            BigDecimal amount,
-//            BigDecimal monthlyPayment,
-//            LocalDate issueDate
-//    ) {
-//        List<PaymentScheduleElementDto> schedule = this.paymentSchedule(
-//                term,
-//                rate,
-//                amount,
-//                monthlyPayment,
-//                issueDate
-//        );
-//        return schedule
-//                .stream()
-//                .map(PaymentScheduleElementDto::totalPayment)
-//                .reduce(BigDecimal.ZERO, BigDecimal::add);
-//    }
 }
