@@ -88,11 +88,13 @@ public class CalculatorServiceTest {
 
         List<LoanOfferDto> offers = calculatorService.createOffers(amount, term);
 
-        assertThat(offers).hasSize(4);
-        assertOfferExists(offers, false, false, "20");
-        assertOfferExists(offers, false, true, "19");
-        assertOfferExists(offers, true, false, "17");
-        assertOfferExists(offers, true, true, "16");
+        assertAll(
+                () -> assertThat(offers).hasSize(4),
+                () -> assertOfferExists(offers, false, false, "20"),
+                () -> assertOfferExists(offers, false, true, "19"),
+                () -> assertOfferExists(offers, true, false, "17"),
+                () -> assertOfferExists(offers, true, true, "16")
+        );
     }
 
     @Test
