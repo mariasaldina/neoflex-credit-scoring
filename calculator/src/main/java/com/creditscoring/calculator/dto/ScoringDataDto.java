@@ -1,7 +1,9 @@
 package com.creditscoring.calculator.dto;
 
+import com.creditscoring.calculator.domain.MaxAgeValidatable;
 import com.creditscoring.calculator.enums.Gender;
 import com.creditscoring.calculator.enums.MaritalStatus;
+import com.creditscoring.calculator.validation.maxage.ValidMaxAge;
 import com.creditscoring.calculator.validation.minage.ValidMinAge;
 import com.creditscoring.calculator.validation.amount.ValidAmount;
 import com.creditscoring.calculator.validation.term.ValidTerm;
@@ -13,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Builder
+@ValidMaxAge
 public record ScoringDataDto(
         @NotNull
         @Positive
@@ -20,19 +23,24 @@ public record ScoringDataDto(
         BigDecimal amount,
 
         @NotNull
+        @Positive
         @ValidTerm
         Integer term,
 
         @NotBlank
+        @Size(min = 2, max = 30)
         String firstName,
         @NotBlank
+        @Size(min = 2, max = 30)
         String lastName,
+        @Size(min = 2, max = 30)
         String middleName,
 
         @NotNull
         Gender gender,
 
         @NotNull
+        @Past
         @ValidMinAge
         LocalDate birthdate,
 
@@ -68,4 +76,4 @@ public record ScoringDataDto(
         Boolean isInsuranceEnabled,
         @NotNull
         Boolean isSalaryClient
-) {}
+) implements MaxAgeValidatable {}

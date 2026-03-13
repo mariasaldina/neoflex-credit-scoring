@@ -1,14 +1,17 @@
 package com.creditscoring.calculator.dto;
 
+import com.creditscoring.calculator.domain.MaxAgeValidatable;
 import com.creditscoring.calculator.validation.minage.ValidMinAge;
 import com.creditscoring.calculator.validation.amount.ValidAmount;
 import com.creditscoring.calculator.validation.maxage.ValidMaxAge;
 import com.creditscoring.calculator.validation.term.ValidTerm;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Builder
 @ValidMaxAge
 public record LoanStatementRequestDto(
         @NotNull
@@ -46,4 +49,4 @@ public record LoanStatementRequestDto(
         @NotBlank
         @Pattern(regexp = "\\d{6}")
         String passportNumber
-) {}
+) implements MaxAgeValidatable {}

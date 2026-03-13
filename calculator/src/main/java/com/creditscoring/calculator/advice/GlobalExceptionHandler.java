@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Stream;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -29,9 +30,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleValidationExceptions(MethodArgumentNotValidException e) {
-        List<String> errors = e.getBindingResult().getFieldErrors()
+        List<String> fieldErrors = e.getBindingResult().getFieldErrors()
                 .stream()
                 .map(f -> f.getField() + ": " + f.getDefaultMessage())
+                .toList();
+
+        List<String> globalErrors = e.getBindingResult().getGlobalErrors()
+                .stream()
+                .map(g -> g.getObjectName() + ": " + g.getDefaultMessage())
+                .toList();
+
+        List<String> errors = Stream.concat(fieldErrors.stream(), globalErrors.stream())
                 .toList();
 
         return createApiError(
