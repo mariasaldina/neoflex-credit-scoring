@@ -1,6 +1,7 @@
-package com.creditscoring.calculator;
+package com.creditscoring.calculator.utils;
 
 import com.creditscoring.calculator.dto.EmploymentDto;
+import com.creditscoring.calculator.dto.LoanStatementRequestDto;
 import com.creditscoring.calculator.dto.ScoringDataDto;
 import com.creditscoring.calculator.enums.EmploymentStatus;
 import com.creditscoring.calculator.enums.Gender;
@@ -9,7 +10,6 @@ import com.creditscoring.calculator.enums.Position;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Month;
 
 public class TestDataFactory {
 
@@ -42,5 +42,18 @@ public class TestDataFactory {
                 .position(Position.WORKER)
                 .workExperienceTotal(40)
                 .workExperienceCurrent(10);
+    }
+
+    public static LoanStatementRequestDto.LoanStatementRequestDtoBuilder createLoanStatementBuilder() {
+        return LoanStatementRequestDto.builder()
+                .amount(new BigDecimal("100000"))
+                .term(10)
+                .firstName("Ivan")
+                .lastName("Ivanov")
+                .middleName("Ivanovich")
+                .email("test@mail.com")
+                .birthdate(LocalDate.now().minusYears(26))
+                .passportSeries("0000")
+                .passportNumber("000000");
     }
 }

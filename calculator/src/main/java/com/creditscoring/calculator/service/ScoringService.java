@@ -56,7 +56,7 @@ public class ScoringService {
                 .divide(salary, 10, RoundingMode.HALF_UP)
                 .compareTo(ratio) > 0) {
             throw new ScoringException(
-                    String.format("Сумма займа превышает %b заработные платы", ratio)
+                    String.format("Сумма займа превышает %s заработные платы", ratio)
             );
         } else {
             return BigDecimal.ZERO;

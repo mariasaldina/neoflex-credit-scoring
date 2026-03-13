@@ -1,5 +1,6 @@
-package com.creditscoring.calculator;
+package com.creditscoring.calculator.service;
 
+import com.creditscoring.calculator.utils.TestDataFactory;
 import com.creditscoring.calculator.configuration.ScoringProperties;
 import com.creditscoring.calculator.dto.ScoringDataDto;
 import com.creditscoring.calculator.enums.EmploymentStatus;
@@ -7,7 +8,6 @@ import com.creditscoring.calculator.enums.Gender;
 import com.creditscoring.calculator.enums.MaritalStatus;
 import com.creditscoring.calculator.enums.Position;
 import com.creditscoring.calculator.exceptions.ScoringException;
-import com.creditscoring.calculator.service.ScoringService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

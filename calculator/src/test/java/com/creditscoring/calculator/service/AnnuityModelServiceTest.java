@@ -1,9 +1,7 @@
-package com.creditscoring.calculator;
+package com.creditscoring.calculator.service;
 
 import com.creditscoring.calculator.domain.FullPaymentData;
 import com.creditscoring.calculator.dto.PaymentScheduleElementDto;
-import com.creditscoring.calculator.service.AnnuityModelService;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
