@@ -1,4 +1,4 @@
-package com.creditscoring.calculator.configuration;
+package com.creditscoring.calculator.properties;
 
 import com.creditscoring.calculator.enums.Gender;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -1,10 +1,10 @@
 package com.creditscoring.calculator.service;
 
 import com.creditscoring.calculator.utils.TestDataFactory;
-import com.creditscoring.calculator.configuration.LoanProperties;
+import com.creditscoring.calculator.properties.LoanProperties;
 import com.creditscoring.calculator.domain.FullPaymentData;
-import com.creditscoring.calculator.dto.CreditDto;
-import com.creditscoring.calculator.dto.LoanOfferDto;
+import com.creditscoring.calculator.dto.response.CreditDto;
+import com.creditscoring.calculator.dto.response.LoanOfferDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

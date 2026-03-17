@@ -1,4 +1,4 @@
-package com.creditscoring.calculator.configuration;
+package com.creditscoring.calculator.properties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

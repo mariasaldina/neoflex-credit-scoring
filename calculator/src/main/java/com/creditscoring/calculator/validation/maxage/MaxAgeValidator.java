@@ -1,23 +1,18 @@
 package com.creditscoring.calculator.validation.maxage;
 
-import com.creditscoring.calculator.configuration.PrescoringProperties;
+import com.creditscoring.calculator.properties.PrescoringProperties;
 import com.creditscoring.calculator.domain.MaxAgeValidatable;
-import com.creditscoring.calculator.dto.LoanStatementRequestDto;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.Period;
 
+@RequiredArgsConstructor
 public class MaxAgeValidator implements ConstraintValidator<ValidMaxAge, MaxAgeValidatable> {
 
     private final PrescoringProperties prescoringProperties;
-
-    public MaxAgeValidator(
-            PrescoringProperties prescoringProperties
-    ) {
-        this.prescoringProperties = prescoringProperties;
-    }
 
     @Override
     public boolean isValid(MaxAgeValidatable obj, ConstraintValidatorContext context) {
@@ -27,6 +22,17 @@ public class MaxAgeValidator implements ConstraintValidator<ValidMaxAge, MaxAgeV
 
         LocalDate payOffDate = LocalDate.now().plusMonths(obj.term());
         int ageAfterPayOff = Period.between(obj.birthdate(), payOffDate).getYears();
-        return ageAfterPayOff <= prescoringProperties.age().max();
+
+        boolean isValid = ageAfterPayOff <= prescoringProperties.age().max();
+        if (!isValid) {
+            context.disableDefaultConstraintViolation();
+            String violationMessage = String
+                    .format("На момент выплаты кредита заёмщик будет старше %s лет",
+                            prescoringProperties.age().max());
+            context.buildConstraintViolationWithTemplate(violationMessage)
+                    .addConstraintViolation();
+        }
+
+        return isValid;
     }
 }

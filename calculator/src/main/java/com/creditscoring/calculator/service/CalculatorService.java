@@ -1,12 +1,12 @@
 package com.creditscoring.calculator.service;
 
-import com.creditscoring.calculator.configuration.LoanProperties;
+import com.creditscoring.calculator.properties.LoanProperties;
 import com.creditscoring.calculator.domain.FullPaymentData;
-import com.creditscoring.calculator.dto.CreditDto;
-import com.creditscoring.calculator.dto.LoanOfferDto;
-import com.creditscoring.calculator.dto.ScoringDataDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.creditscoring.calculator.dto.response.CreditDto;
+import com.creditscoring.calculator.dto.response.LoanOfferDto;
+import com.creditscoring.calculator.dto.request.ScoringDataDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,22 +17,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class CalculatorService {
     private final LoanProperties loanProperties;
     private final ScoringService scoringService;
     private final AnnuityModelService annuityModelService;
-    private final Logger logger = LoggerFactory.getLogger(CalculatorService.class);
-
-    public CalculatorService(
-            LoanProperties loanProperties,
-            ScoringService scoringService,
-            AnnuityModelService annuityModelService
-    ) {
-        this.loanProperties = loanProperties;
-        this.scoringService = scoringService;
-        this.annuityModelService = annuityModelService;
-    }
 
     private BigDecimal getInsuranceRate(BigDecimal rate) {
         return rate.add(loanProperties.insurance().rate());
@@ -42,7 +33,7 @@ public class CalculatorService {
         return rate.add(loanProperties.salaryClient().rate());
     }
 
-    private BigDecimal getInsuranceAmount(BigDecimal amount) {
+    private BigDecimal getAmountWithInsurance(BigDecimal amount) {
         BigDecimal insuranceAmount = amount
                 .multiply(loanProperties
                         .insurance()
@@ -51,7 +42,7 @@ public class CalculatorService {
                         .add(BigDecimal.ONE)
                 )
                 .setScale(2, RoundingMode.HALF_UP);
-        logger.debug("\nСумма кредита вместе со страховкой: {}\n", insuranceAmount);
+        log.debug("\nСумма кредита вместе со страховкой: {}\n", insuranceAmount);
         return insuranceAmount;
     }
 
@@ -84,7 +75,7 @@ public class CalculatorService {
             Integer term
     ) {
         BigDecimal baseRate = loanProperties.baseRate();
-        BigDecimal insuranceAmount = getInsuranceAmount(amount);
+        BigDecimal insuranceAmount = getAmountWithInsurance(amount);
 
         return Stream.of(
                 this.formLoanOffer(amount, baseRate, term, false, false),
@@ -119,7 +110,7 @@ public class CalculatorService {
 
         BigDecimal amount;
         if (scoringData.isInsuranceEnabled()) {
-            amount = getInsuranceAmount(scoringData.amount());
+            amount = getAmountWithInsurance(scoringData.amount());
         } else {
             amount = scoringData.amount();
         }

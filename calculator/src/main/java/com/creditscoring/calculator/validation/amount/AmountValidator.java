@@ -1,20 +1,16 @@
 package com.creditscoring.calculator.validation.amount;
 
-import com.creditscoring.calculator.configuration.PrescoringProperties;
+import com.creditscoring.calculator.properties.PrescoringProperties;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 
+@RequiredArgsConstructor
 public class AmountValidator implements ConstraintValidator<ValidAmount, BigDecimal> {
 
     private final PrescoringProperties prescoringProperties;
-
-    public AmountValidator(
-            PrescoringProperties prescoringProperties
-    ) {
-        this.prescoringProperties = prescoringProperties;
-    }
 
     @Override
     public boolean isValid(BigDecimal amount, ConstraintValidatorContext context) {
@@ -23,6 +19,19 @@ public class AmountValidator implements ConstraintValidator<ValidAmount, BigDeci
         BigDecimal min = prescoringProperties.amount().min();
         BigDecimal max = prescoringProperties.amount().max();
 
-        return amount.compareTo(min) >= 0 && amount.compareTo(max) <= 0;
+        boolean isLess = amount.compareTo(min) < 0;
+        boolean isMore = amount.compareTo(max) > 0;
+
+        if (isLess || isMore) {
+            context.disableDefaultConstraintViolation();
+            String violationMessage =
+                    isLess
+                            ? String.format("Сумма займа меньше %s рублей", min)
+                            : String.format("Сумма займа больше %s рублей", max);
+            context.buildConstraintViolationWithTemplate(violationMessage)
+                    .addConstraintViolation();
+        }
+
+        return !isLess && !isMore;
     }
 }

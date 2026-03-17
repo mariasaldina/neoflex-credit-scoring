@@ -1,6 +1,5 @@
-package com.creditscoring.calculator.configuration;
+package com.creditscoring.calculator.properties;
 
-import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.math.BigDecimal;

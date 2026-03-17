@@ -1,6 +1,6 @@
 package com.creditscoring.calculator.domain;
 
-import com.creditscoring.calculator.dto.PaymentScheduleElementDto;
+import com.creditscoring.calculator.dto.response.PaymentScheduleElementDto;
 
 import java.math.BigDecimal;
 import java.util.List;

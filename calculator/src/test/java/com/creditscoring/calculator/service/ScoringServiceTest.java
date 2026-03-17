@@ -1,8 +1,8 @@
 package com.creditscoring.calculator.service;
 
 import com.creditscoring.calculator.utils.TestDataFactory;
-import com.creditscoring.calculator.configuration.ScoringProperties;
-import com.creditscoring.calculator.dto.ScoringDataDto;
+import com.creditscoring.calculator.properties.ScoringProperties;
+import com.creditscoring.calculator.dto.request.ScoringDataDto;
 import com.creditscoring.calculator.enums.EmploymentStatus;
 import com.creditscoring.calculator.enums.Gender;
 import com.creditscoring.calculator.enums.MaritalStatus;

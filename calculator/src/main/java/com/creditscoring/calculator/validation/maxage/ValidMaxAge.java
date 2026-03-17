@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = MaxAgeValidator.class)
 public @interface ValidMaxAge {
-    String message() default "Заёмщик старше максимального разрешённого возраста";
+    String message() default "На момент выплаты кредита заёмщик будет старше максимального разрешённого возраста";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

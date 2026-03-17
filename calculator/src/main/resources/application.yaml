@@ -5,6 +5,20 @@ logging:
   level:
     root: INFO
     com.creditscoring.calculator: DEBUG
+    org.zalando.logbook: INFO
+
+logbook:
+  format:
+    style: json
+  include:
+    - /**
+  obfuscate:
+    json-body-fields:
+      - firstName
+      - lastName
+      - middleName
+      - passportSeries
+      - passportNumber
 
 loan:
   base-rate: 20

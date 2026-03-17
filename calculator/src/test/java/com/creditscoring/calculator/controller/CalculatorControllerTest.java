@@ -1,14 +1,13 @@
 package com.creditscoring.calculator.controller;
 
-import com.creditscoring.calculator.dto.ScoringDataDto;
+import com.creditscoring.calculator.dto.request.ScoringDataDto;
 import com.creditscoring.calculator.utils.TestDataFactory;
-import com.creditscoring.calculator.configuration.PrescoringProperties;
-import com.creditscoring.calculator.dto.LoanStatementRequestDto;
+import com.creditscoring.calculator.properties.PrescoringProperties;
+import com.creditscoring.calculator.dto.request.LoanStatementRequestDto;
 import com.creditscoring.calculator.service.CalculatorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,10 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

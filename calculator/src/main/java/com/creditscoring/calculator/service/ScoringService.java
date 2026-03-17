@@ -1,14 +1,14 @@
 package com.creditscoring.calculator.service;
 
-import com.creditscoring.calculator.configuration.ScoringProperties;
-import com.creditscoring.calculator.dto.ScoringDataDto;
+import com.creditscoring.calculator.properties.ScoringProperties;
+import com.creditscoring.calculator.dto.request.ScoringDataDto;
 import com.creditscoring.calculator.enums.EmploymentStatus;
 import com.creditscoring.calculator.enums.Gender;
 import com.creditscoring.calculator.enums.MaritalStatus;
 import com.creditscoring.calculator.enums.Position;
 import com.creditscoring.calculator.exceptions.ScoringException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -16,16 +16,11 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Period;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class ScoringService {
     private final ScoringProperties scoringProperties;
-    private final Logger logger = LoggerFactory.getLogger(ScoringService.class);
-
-    public ScoringService(
-            ScoringProperties scoringProperties
-    ) {
-        this.scoringProperties = scoringProperties;
-    }
 
     private BigDecimal employmentStatusRule(EmploymentStatus status) {
         BigDecimal rate;
@@ -35,7 +30,7 @@ public class ScoringService {
             case UNEMPLOYED -> { throw new ScoringException("Заёмщик должен быть трудоустроен"); }
             default -> { rate = BigDecimal.ZERO; }
         }
-        logger.debug("\nВлияние рабочего статуса на ставку: {}\n", rate);
+        log.debug("\nВлияние рабочего статуса на ставку: {}\n", rate);
         return rate;
     }
 
@@ -46,7 +41,7 @@ public class ScoringService {
             case TOP_MANAGER -> { rate = scoringProperties.employment().position().topManagerRate(); }
             default -> { rate = BigDecimal.ZERO; }
         }
-        logger.debug("\nВлияние позиции на работе на ставку: {}\n", rate);
+        log.debug("\nВлияние позиции на работе на ставку: {}\n", rate);
         return rate;
     }
 
@@ -70,7 +65,7 @@ public class ScoringService {
             case DIVORCED -> { rate = scoringProperties.maritalStatus().divorcedRate(); }
             default -> { rate = BigDecimal.ZERO; }
         }
-        logger.debug("\nВлияние семейного положения на ставку: {}\n", rate);
+        log.debug("\nВлияние семейного положения на ставку: {}\n", rate);
         return rate;
     }
 
@@ -80,7 +75,7 @@ public class ScoringService {
                 .filter(rule -> rule.minAge() == null || age >= rule.minAge())
                 .filter(rule -> rule.maxAge() == null || age <= rule.maxAge())
                 .peek(rule ->
-                        logger.debug("\nПрименено демографическое правило {}\n", rule))
+                        log.debug("\nПрименено демографическое правило {}\n", rule))
                 .map(ScoringProperties.DemographicRule::rate)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
