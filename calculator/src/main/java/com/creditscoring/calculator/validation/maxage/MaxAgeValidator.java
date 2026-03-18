@@ -1,7 +1,6 @@
 package com.creditscoring.calculator.validation.maxage;
 
 import com.creditscoring.calculator.properties.PrescoringProperties;
-import com.creditscoring.calculator.domain.MaxAgeValidatable;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;

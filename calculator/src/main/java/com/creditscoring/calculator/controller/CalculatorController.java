@@ -5,7 +5,7 @@ import com.creditscoring.calculator.dto.response.LoanOfferDto;
 import com.creditscoring.calculator.dto.request.LoanStatementRequestDto;
 import com.creditscoring.calculator.dto.request.ScoringDataDto;
 import com.creditscoring.calculator.service.CalculatorService;
-import com.creditscoring.calculator.swagger.CalculatorApi;
+import com.creditscoring.calculator.api.CalculatorApi;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

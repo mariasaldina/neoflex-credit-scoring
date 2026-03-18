@@ -1,4 +1,4 @@
-package com.creditscoring.calculator.swagger;
+package com.creditscoring.calculator.api;
 
 import com.creditscoring.calculator.advice.GlobalExceptionHandler;
 import com.creditscoring.calculator.dto.response.CreditDto;
