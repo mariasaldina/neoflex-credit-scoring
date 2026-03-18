@@ -1,6 +1,6 @@
 package com.creditscoring.calculator.dto.request;
 
-import com.creditscoring.calculator.domain.MaxAgeValidatable;
+import com.creditscoring.calculator.validation.maxage.MaxAgeValidatable;
 import com.creditscoring.calculator.enums.Gender;
 import com.creditscoring.calculator.enums.MaritalStatus;
 import com.creditscoring.calculator.validation.maxage.ValidMaxAge;

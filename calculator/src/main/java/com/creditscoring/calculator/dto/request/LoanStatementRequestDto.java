@@ -1,6 +1,6 @@
 package com.creditscoring.calculator.dto.request;
 
-import com.creditscoring.calculator.domain.MaxAgeValidatable;
+import com.creditscoring.calculator.validation.maxage.MaxAgeValidatable;
 import com.creditscoring.calculator.validation.minage.ValidMinAge;
 import com.creditscoring.calculator.validation.amount.ValidAmount;
 import com.creditscoring.calculator.validation.maxage.ValidMaxAge;
