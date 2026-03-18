@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
         ApiError apiError = createApiError(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Внутренняя ошибка сервера",
-                List.of()
+                List.of(e.getMessage())
         );
 
         log.error("INTERNAL SERVER ERROR [id: {}]: {}", apiError.id, e.getMessage(), e);
