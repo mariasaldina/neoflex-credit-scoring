@@ -1,3 +1,66 @@
 spring:
   application:
     name: calculator
+logging:
+  level:
+    root: INFO
+    com.creditscoring.calculator: DEBUG
+    org.zalando.logbook: INFO
+
+logbook:
+  format:
+    style: json
+  include:
+    - /**
+  obfuscate:
+    json-body-fields:
+      - firstName
+      - lastName
+      - middleName
+      - passportSeries
+      - passportNumber
+
+loan:
+  base-rate: 20
+  insurance:
+    price-percent: 5
+    rate: -3
+  salary-client:
+    rate: -1
+
+prescoring:
+  amount:
+    min: 20000
+    max: 10000000
+  term:
+    min: 6
+    max: 60
+  age:
+    min: 18
+    max: 75
+
+scoring:
+  employment:
+    status:
+      self-employed-rate: 2
+      business-owner-rate: 1
+    position:
+      middle-manager-rate: -2
+      top-manager-rate: -3
+    max-loan-to-salaries-ratio: 24
+    min-total-work-experience: 18
+    min-current-work-experience: 3
+
+  marital-status:
+    married-rate: -3
+    divorced-rate: 1
+
+  demographics:
+    - gender: MALE
+      min-age: 30
+      max-age: 55
+      rate: -3
+    - gender: FEMALE
+      min-age: 32
+      max-age: 60
+      rate: -3
