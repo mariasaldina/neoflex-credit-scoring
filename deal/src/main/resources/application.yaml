@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: deal
+
+  config:
+    import: "optional:file:.env[.properties]"
+  datasource:
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
