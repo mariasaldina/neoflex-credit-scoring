@@ -37,7 +37,7 @@ public class ScoringService {
     private BigDecimal employmentPositionRule(Position position) {
         BigDecimal rate;
         switch (position) {
-            case MIDDLE_MANAGER -> { rate = scoringProperties.employment().position().middleManagerRate(); }
+            case MID_MANAGER -> { rate = scoringProperties.employment().position().middleManagerRate(); }
             case TOP_MANAGER -> { rate = scoringProperties.employment().position().topManagerRate(); }
             default -> { rate = BigDecimal.ZERO; }
         }

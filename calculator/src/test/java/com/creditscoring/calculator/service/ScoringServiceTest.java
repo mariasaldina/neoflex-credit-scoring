@@ -94,7 +94,7 @@ public class ScoringServiceTest {
 
     @ParameterizedTest
     @CsvSource({
-            "MIDDLE_MANAGER, 18",
+            "MID_MANAGER, 18",
             "TOP_MANAGER, 17"
     })
     void employmentPositionTest_success(Position position, BigDecimal expectedRate) {
