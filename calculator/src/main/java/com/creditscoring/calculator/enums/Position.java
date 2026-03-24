@@ -2,7 +2,7 @@ package com.creditscoring.calculator.enums;
 
 public enum Position {
     WORKER,
-    MIDDLE_MANAGER,
+    MID_MANAGER,
     TOP_MANAGER,
     OWNER
 }
