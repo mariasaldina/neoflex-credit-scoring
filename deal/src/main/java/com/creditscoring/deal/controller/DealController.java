@@ -1,17 +1,16 @@
 package com.creditscoring.deal.controller;
 
+import com.creditscoring.deal.dto.request.FinishRegistrationRequestDto;
 import com.creditscoring.deal.dto.request.LoanStatementRequestDto;
 import com.creditscoring.deal.dto.LoanOfferDto;
 import com.creditscoring.deal.service.DealService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/deal")
@@ -36,7 +35,11 @@ public class DealController {
     }
 
     @PostMapping("/calculate/{statementId}")
-    public void calculateCredit() {
-
+    public ResponseEntity<?> calculateCredit(
+            @RequestBody FinishRegistrationRequestDto reqBody,
+            @PathVariable UUID statementId
+    ) {
+        this.dealService.calculateCredit(reqBody, statementId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

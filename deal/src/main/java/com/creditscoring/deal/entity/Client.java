@@ -3,7 +3,6 @@ package com.creditscoring.deal.entity;
 import com.creditscoring.deal.enums.Gender;
 import com.creditscoring.deal.enums.MaritalStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,20 +15,6 @@ import java.util.UUID;
 @Getter
 @Setter
 public class Client {
-
-    public Client(
-            String firstName,
-            String lastName,
-            String middleName,
-            LocalDate birthdate,
-            String email
-    ) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.middleName = middleName;
-        this.birthdate = birthdate;
-        this.email = email;
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -48,7 +33,13 @@ public class Client {
     private MaritalStatus maritalStatus;
 
     private Integer dependentAmount;
-    private UUID passportId;
-    private UUID employmentId;
     private String accountNumber;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "passport_id")
+    private Passport passport;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "employment_id")
+    private Employment employment;
 }

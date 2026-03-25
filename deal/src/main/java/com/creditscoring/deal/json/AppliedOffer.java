@@ -1,5 +1,6 @@
 package com.creditscoring.deal.json;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -12,4 +13,4 @@ public record AppliedOffer(
         BigDecimal rate,
         Boolean isInsuranceEnabled,
         Boolean isSalaryClient
-) {}
+) implements Serializable {}
