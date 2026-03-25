@@ -9,4 +9,9 @@ public record StatusHistory(
         ApplicationStatus status,
         LocalDateTime time,
         ChangeType changeType
-) {}
+) {
+
+    public StatusHistory(ApplicationStatus status, ChangeType changeType) {
+        this(status, LocalDateTime.now(), changeType);
+    }
+}

@@ -4,6 +4,7 @@ import com.creditscoring.deal.dto.request.LoanStatementRequestDto;
 import com.creditscoring.deal.dto.LoanOfferDto;
 import com.creditscoring.deal.service.DealService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,12 +24,15 @@ public class DealController {
     public ResponseEntity<List<LoanOfferDto>> createStatement(
             @RequestBody LoanStatementRequestDto reqBody
     ) {
-        return ResponseEntity.ok(this.dealService.saveStatement(reqBody));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.dealService.saveStatement(reqBody));
     }
 
     @PostMapping("/offer/select")
-    public void selectOffer() {
-
+    public ResponseEntity<?> selectOffer(
+            @RequestBody LoanOfferDto reqBody
+    ) {
+        this.dealService.selectOffer(reqBody);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PostMapping("/calculate/{statementId}")
