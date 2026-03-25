@@ -3,11 +3,17 @@ package com.creditscoring.deal.entity;
 import com.creditscoring.deal.enums.EmploymentStatus;
 import com.creditscoring.deal.enums.EmploymentPosition;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 public class Employment {
 
     @Id

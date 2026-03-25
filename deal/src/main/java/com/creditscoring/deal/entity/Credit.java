@@ -4,6 +4,9 @@ import com.creditscoring.deal.enums.CreditStatus;
 import com.creditscoring.deal.json.PaymentScheduleElement;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 import java.math.BigDecimal;
@@ -11,6 +14,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
+@NoArgsConstructor
+@Getter
+@Setter
 public class Credit {
 
     @Id
