@@ -1,14 +1,13 @@
 package com.creditscoring.deal.service;
 
-import com.creditscoring.deal.dto.CreditDto;
-import com.creditscoring.deal.dto.LoanOfferDto;
-import com.creditscoring.deal.dto.ScoringDataDto;
+import com.creditscoring.deal.dto.calculator.response.CreditDto;
+import com.creditscoring.deal.dto.request.LoanOfferDto;
+import com.creditscoring.deal.dto.calculator.request.ScoringDataDto;
 import com.creditscoring.deal.dto.request.FinishRegistrationRequestDto;
 import com.creditscoring.deal.dto.request.LoanStatementRequestDto;
 import com.creditscoring.deal.entity.*;
 import com.creditscoring.deal.enums.ApplicationStatus;
 import com.creditscoring.deal.enums.ChangeType;
-import com.creditscoring.deal.json.AppliedOffer;
 import com.creditscoring.deal.json.StatusHistory;
 import com.creditscoring.deal.mapper.*;
 import com.creditscoring.deal.repository.ClientRepository;
@@ -16,6 +15,7 @@ import com.creditscoring.deal.repository.CreditRepository;
 import com.creditscoring.deal.repository.StatementRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DealService {
@@ -45,6 +46,9 @@ public class DealService {
         client.setPassport(passportMapper.toEntity(statementDto));
         Statement statement = this.statementRepository.save(new Statement(client));
 
+        log.debug("Клиент {} сохранен в БД", client.getClientId());
+        log.debug("Заявка {} сохранена в БД", statement.getStatementId());
+
         return this.calculatorClient.getOffers(statementDto)
                 .stream()
                 .map(o -> offerMapper.updateStatementId(o, statement.getStatementId()))
@@ -54,7 +58,7 @@ public class DealService {
     @Transactional
     public void selectOffer(LoanOfferDto appliedOffer) {
         Statement statement = this.statementRepository.findById(appliedOffer.statementId()).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Некорректный statementId")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Заявка не найдена")
         );
         statement.setStatus(ApplicationStatus.APPROVED);
         statement.setAppliedOffer(offerMapper.toEntityField(appliedOffer));
@@ -62,12 +66,18 @@ public class DealService {
                 ApplicationStatus.APPROVED,
                 ChangeType.AUTOMATIC
         ));
+
+        log.debug("Статус заявки {} изменён на APPROVED", statement.getStatementId());
+        log.debug("Заявка {} сохранена с предложением: isInsuranceEnabled={}, isSalaryClient={}",
+                statement.getStatementId(),
+                appliedOffer.isInsuranceEnabled(),
+                appliedOffer.isSalaryClient());
     }
 
     @Transactional
     public void calculateCredit(FinishRegistrationRequestDto finishDto, UUID statementId) {
         Statement statement = this.statementRepository.findById(statementId).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Некорректный statementId")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Заявка не найдена")
         );
         ScoringDataDto scoringDataDto = scoringDataMapper.toDto(statement, finishDto);
 
@@ -77,18 +87,23 @@ public class DealService {
         } catch (ResponseStatusException e) {
             if (e.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 statement.setStatus(ApplicationStatus.CC_DENIED);
+                log.debug("Статус заявки {} изменён на CC_DENIED", statement.getStatementId());
             }
             throw e;
         }
 
-        this.creditRepository.save(creditMapper.toEntity(creditDto));
+        Credit credit = this.creditRepository.save(creditMapper.toEntity(creditDto));
         clientMapper.updateEntity(finishDto, statement.getClient());
         passportMapper.updateEntity(finishDto, statement.getClient().getPassport());
+
+        log.debug("Кредитное предложение {} сохранено в БД", credit.getCreditId());
 
         statement.setStatus(ApplicationStatus.CC_APPROVED);
         statement.getStatusHistory().add(new StatusHistory(
                 ApplicationStatus.CC_APPROVED,
                 ChangeType.AUTOMATIC
         ));
+
+        log.debug("Статус заявки {} изменён на CC_APPROVED", statement.getStatementId());
     }
 }

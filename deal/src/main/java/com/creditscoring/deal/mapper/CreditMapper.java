@@ -1,6 +1,6 @@
 package com.creditscoring.deal.mapper;
 
-import com.creditscoring.deal.dto.CreditDto;
+import com.creditscoring.deal.dto.calculator.response.CreditDto;
 import com.creditscoring.deal.entity.Credit;
 import org.mapstruct.Mapper;
 

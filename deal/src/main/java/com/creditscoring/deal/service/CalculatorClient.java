@@ -1,8 +1,8 @@
 package com.creditscoring.deal.service;
 
-import com.creditscoring.deal.dto.CreditDto;
-import com.creditscoring.deal.dto.LoanOfferDto;
-import com.creditscoring.deal.dto.ScoringDataDto;
+import com.creditscoring.deal.dto.calculator.response.CreditDto;
+import com.creditscoring.deal.dto.request.LoanOfferDto;
+import com.creditscoring.deal.dto.calculator.request.ScoringDataDto;
 import com.creditscoring.deal.dto.request.LoanStatementRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;

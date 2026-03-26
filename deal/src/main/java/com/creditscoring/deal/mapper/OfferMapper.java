@@ -1,6 +1,6 @@
 package com.creditscoring.deal.mapper;
 
-import com.creditscoring.deal.dto.LoanOfferDto;
+import com.creditscoring.deal.dto.request.LoanOfferDto;
 import com.creditscoring.deal.json.AppliedOffer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
