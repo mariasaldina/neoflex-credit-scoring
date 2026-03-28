@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/credit_scoring_test
+    username: postgres
+    password: pass
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop

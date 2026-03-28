@@ -2,10 +2,15 @@ package com.creditscoring.deal.mapper;
 
 import com.creditscoring.deal.dto.calculator.response.CreditDto;
 import com.creditscoring.deal.entity.Credit;
+import com.creditscoring.deal.enums.CreditStatus;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = {PaymentScheduleElementMapper.class})
 public interface CreditMapper {
 
+    @Mapping(target = "insuranceEnabled", source = "isInsuranceEnabled")
+    @Mapping(target = "salaryClient", source = "isSalaryClient")
+    @Mapping(target = "creditStatus", constant = "CALCULATED")
     Credit toEntity(CreditDto dto);
 }

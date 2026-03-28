@@ -4,10 +4,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Builder
 @Schema(description = "Заявка с данными для расчёта кредитных предложений")
 public record LoanStatementRequestDto(
 

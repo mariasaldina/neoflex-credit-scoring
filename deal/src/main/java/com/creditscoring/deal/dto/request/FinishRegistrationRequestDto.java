@@ -5,9 +5,11 @@ import com.creditscoring.deal.enums.MaritalStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 
 import java.time.LocalDate;
 
+@Builder
 @Schema(description = "Данные для завершения регистрации и расчёта финального кредитного предложения")
 public record FinishRegistrationRequestDto(
 

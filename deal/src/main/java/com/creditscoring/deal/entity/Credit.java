@@ -19,44 +19,36 @@ import java.util.UUID;
 @Setter
 public class Credit {
 
-    public Credit(
-            BigDecimal amount,
-            Integer term,
-            BigDecimal monthlyPayment,
-            BigDecimal rate,
-            BigDecimal psk,
-            List<PaymentScheduleElement> paymentSchedule,
-            Boolean insuranceEnabled,
-            Boolean salaryClient
-    ) {
-        this.amount = amount;
-        this.term = term;
-        this.monthlyPayment = monthlyPayment;
-        this.rate = rate;
-        this.psk = psk;
-        this.paymentSchedule = paymentSchedule;
-        this.insuranceEnabled = insuranceEnabled;
-        this.salaryClient = salaryClient;
-        this.creditStatus = CreditStatus.CALCULATED;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID creditId;
 
+    @Column(nullable = false)
     private BigDecimal amount;
+
+    @Column(nullable = false)
     private Integer term;
+
+    @Column(nullable = false)
     private BigDecimal monthlyPayment;
+
+    @Column(nullable = false)
     private BigDecimal rate;
+
+    @Column(nullable = false)
     private BigDecimal psk;
 
     @Type(JsonType.class)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "jsonb", nullable = false)
     private List<PaymentScheduleElement> paymentSchedule;
 
+    @Column(nullable = false)
     private Boolean insuranceEnabled;
+
+    @Column(nullable = false)
     private Boolean salaryClient;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private CreditStatus creditStatus;
 }

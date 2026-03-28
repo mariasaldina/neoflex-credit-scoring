@@ -3,13 +3,13 @@ package com.creditscoring.deal.entity;
 import com.creditscoring.deal.enums.Gender;
 import com.creditscoring.deal.enums.MaritalStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
+@Builder
+@AllArgsConstructor
 @Entity
 @NoArgsConstructor
 @Getter
@@ -20,10 +20,18 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID clientId;
 
+    @Column(nullable = false)
     private String lastName;
+
+    @Column(nullable = false)
     private String firstName;
+
     private String middleName;
+
+    @Column(nullable = false)
     private LocalDate birthdate;
+
+    @Column(nullable = false)
     private String email;
 
     @Enumerated(EnumType.STRING)

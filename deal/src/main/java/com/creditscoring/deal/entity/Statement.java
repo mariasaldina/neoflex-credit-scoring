@@ -6,10 +6,7 @@ import com.creditscoring.deal.json.AppliedOffer;
 import com.creditscoring.deal.json.StatusHistory;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Type;
 
 import java.time.LocalDateTime;
@@ -17,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Builder
+@AllArgsConstructor
 @Entity
 @NoArgsConstructor
 @Getter
@@ -27,7 +26,8 @@ public class Statement {
         this.client = client;
         this.status = ApplicationStatus.PREAPPROVAL;
         this.creationDate = LocalDateTime.now();
-        this.statusHistory = List.of(new StatusHistory(
+        this.statusHistory = new ArrayList<>();
+        statusHistory.add(new StatusHistory(
                 ApplicationStatus.PREAPPROVAL,
                 ChangeType.AUTOMATIC
         ));
@@ -40,8 +40,10 @@ public class Statement {
     private UUID creditId;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ApplicationStatus status;
 
+    @Column(nullable = false)
     private LocalDateTime creationDate;
 
     @Type(JsonType.class)
@@ -52,11 +54,10 @@ public class Statement {
     private UUID sesCode;
 
     @Type(JsonType.class)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "jsonb", nullable = false)
     private List<StatusHistory> statusHistory;
 
-    @NotNull
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id")
+    @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 }

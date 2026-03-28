@@ -21,14 +21,22 @@ public class Employment {
     private UUID employmentId;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private EmploymentStatus status;
 
+    @Column(nullable = false)
     private String employerInn;
+
+    @Column(nullable = false)
     private BigDecimal salary;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private EmploymentPosition position;
 
+    @Column(nullable = false)
     private Integer workExperienceTotal;
+
+    @Column(nullable = false)
     private Integer workExperienceCurrent;
 }
