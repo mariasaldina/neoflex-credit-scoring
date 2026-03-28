@@ -7,13 +7,11 @@ import com.creditscoring.deal.dto.request.FinishRegistrationRequestDto;
 import com.creditscoring.deal.dto.request.LoanStatementRequestDto;
 import com.creditscoring.deal.entity.*;
 import com.creditscoring.deal.enums.ApplicationStatus;
-import com.creditscoring.deal.enums.ChangeType;
-import com.creditscoring.deal.json.StatusHistory;
 import com.creditscoring.deal.mapper.*;
 import com.creditscoring.deal.repository.ClientRepository;
 import com.creditscoring.deal.repository.CreditRepository;
 import com.creditscoring.deal.repository.StatementRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -39,7 +37,6 @@ public class DealService {
     private final ScoringDataMapper scoringDataMapper;
 
     private final CalculatorClient calculatorClient;
-    private final StatementStatusService statementStatusService;
 
     @Transactional
     public List<LoanOfferDto> saveStatement(LoanStatementRequestDto statementDto) {
@@ -78,7 +75,7 @@ public class DealService {
                 appliedOffer.isSalaryClient());
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = ResponseStatusException.class)
     public void calculateCredit(FinishRegistrationRequestDto finishDto, UUID statementId) {
         Statement statement = this.statementRepository.findById(statementId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Заявка не найдена")
@@ -98,7 +95,7 @@ public class DealService {
             creditDto = this.calculatorClient.getCredit(scoringDataDto);
         } catch (ResponseStatusException e) {
             if (e.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
-                statementStatusService.deny(statementId);
+                statement.changeStatus(ApplicationStatus.CC_DENIED);
                 log.debug("Статус заявки {} изменён на CC_DENIED", statement.getStatementId());
             }
             throw e;

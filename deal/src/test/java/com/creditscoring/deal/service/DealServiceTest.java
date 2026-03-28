@@ -19,13 +19,18 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -137,8 +142,7 @@ public class DealServiceTest {
         );
     }
 
-    @Test
-    void calculateCreditTest() {
+    private Statement createApprovedStatement() {
         Client client = clientRepository.save(TestDataFactory.createClient().build());
         Statement statement = this.statementRepository.save(new Statement(client));
         LoanOfferDto appliedOffer = TestDataFactory.createLoanOfferDto()
@@ -151,6 +155,13 @@ public class DealServiceTest {
                 ApplicationStatus.APPROVED,
                 ChangeType.AUTOMATIC
         ));
+
+        return statement;
+    }
+
+    @Test
+    void calculateCreditTest_success() {
+        Statement statement = createApprovedStatement();
 
         CreditDto creditDto = TestDataFactory.createCreditDto().build();
         when(calculatorClient.getCredit(any())).thenReturn(creditDto);
@@ -167,13 +178,43 @@ public class DealServiceTest {
         Client expectedClient = TestDataFactory.createClient().build();
         clientMapper.updateEntity(finishDto, expectedClient);
         passportMapper.updateEntity(finishDto, expectedClient.getPassport());
-        assertClientEquals(client, expectedClient);
+        assertClientEquals(statement.getClient(), expectedClient);
 
         assertStatementStatuses(
                 statement,
                 ApplicationStatus.PREAPPROVAL,
                 ApplicationStatus.APPROVED,
                 ApplicationStatus.CC_APPROVED
+        );
+    }
+
+    @Test
+    void calculateCreditTest_failure() {
+        Statement statement = createApprovedStatement();
+
+        when(calculatorClient.getCredit(any()))
+                .thenThrow(new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY));
+
+        FinishRegistrationRequestDto finishDto = TestDataFactory.createFinishRegistrationDto().build();
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () ->
+                dealService.calculateCredit(finishDto, statement.getStatementId())
+        );
+
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, ex.getStatusCode());
+
+        verify(calculatorClient).getCredit(any());
+
+        Client expectedClient = TestDataFactory.createClient().build();
+        clientMapper.updateEntity(finishDto, expectedClient);
+        passportMapper.updateEntity(finishDto, expectedClient.getPassport());
+        assertClientEquals(statement.getClient(), expectedClient);
+
+        assertStatementStatuses(
+                statement,
+                ApplicationStatus.PREAPPROVAL,
+                ApplicationStatus.APPROVED,
+                ApplicationStatus.CC_DENIED
         );
     }
 }
