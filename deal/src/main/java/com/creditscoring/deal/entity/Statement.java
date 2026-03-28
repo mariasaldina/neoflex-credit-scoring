@@ -24,13 +24,13 @@ public class Statement {
 
     public Statement(Client client) {
         this.client = client;
-        this.status = ApplicationStatus.PREAPPROVAL;
         this.creationDate = LocalDateTime.now();
-        this.statusHistory = new ArrayList<>();
-        statusHistory.add(new StatusHistory(
-                ApplicationStatus.PREAPPROVAL,
-                ChangeType.AUTOMATIC
-        ));
+        changeStatus(ApplicationStatus.PREAPPROVAL);
+    }
+
+    public void changeStatus(ApplicationStatus status) {
+        this.status = status;
+        statusHistory.add(new StatusHistory(status, ChangeType.AUTOMATIC));
     }
 
     @Id
@@ -55,7 +55,7 @@ public class Statement {
 
     @Type(JsonType.class)
     @Column(columnDefinition = "jsonb", nullable = false)
-    private List<StatusHistory> statusHistory;
+    private List<StatusHistory> statusHistory = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false)

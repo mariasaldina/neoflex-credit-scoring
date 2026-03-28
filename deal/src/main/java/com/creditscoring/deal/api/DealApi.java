@@ -77,6 +77,14 @@ public interface DealApi {
                             mediaType = "application/json",
                             schema = @Schema(implementation = GlobalExceptionHandler.ApiError.class)
                     )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Статус заявки не позволяет изменить кредитное предложение",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = GlobalExceptionHandler.ApiError.class)
+                    )
             )
     })
     @PostMapping("/offer/select")
@@ -98,6 +106,14 @@ public interface DealApi {
             @ApiResponse(
                     responseCode = "404",
                     description = "Заявка не найдена",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = GlobalExceptionHandler.ApiError.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Не выбрано кредитное предложение",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = GlobalExceptionHandler.ApiError.class)

@@ -39,6 +39,7 @@ public class DealService {
     private final ScoringDataMapper scoringDataMapper;
 
     private final CalculatorClient calculatorClient;
+    private final StatementStatusService statementStatusService;
 
     @Transactional
     public List<LoanOfferDto> saveStatement(LoanStatementRequestDto statementDto) {
@@ -60,12 +61,15 @@ public class DealService {
         Statement statement = this.statementRepository.findById(appliedOffer.statementId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Заявка не найдена")
         );
-        statement.setStatus(ApplicationStatus.APPROVED);
+        if (!List.of(ApplicationStatus.PREAPPROVAL, ApplicationStatus.APPROVED).contains(statement.getStatus())) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Статус заявки не позволяет изменить кредитное предложение"
+            );
+        }
+
+        statement.changeStatus(ApplicationStatus.APPROVED);
         statement.setAppliedOffer(offerMapper.toEntityField(appliedOffer));
-        statement.getStatusHistory().add(new StatusHistory(
-                ApplicationStatus.APPROVED,
-                ChangeType.AUTOMATIC
-        ));
 
         log.debug("Статус заявки {} изменён на APPROVED", statement.getStatementId());
         log.debug("Заявка {} сохранена с предложением: isInsuranceEnabled={}, isSalaryClient={}",
@@ -79,31 +83,31 @@ public class DealService {
         Statement statement = this.statementRepository.findById(statementId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Заявка не найдена")
         );
+        if (statement.getAppliedOffer() == null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Не выбрано кредитное предложение");
+        }
+
         ScoringDataDto scoringDataDto = scoringDataMapper.toDto(statement, finishDto);
+
+        clientMapper.updateEntity(finishDto, statement.getClient());
+        passportMapper.updateEntity(finishDto, statement.getClient().getPassport());
+        log.debug("Данные клиента {} обновлены", statement.getClient().getClientId());
 
         CreditDto creditDto;
         try {
             creditDto = this.calculatorClient.getCredit(scoringDataDto);
         } catch (ResponseStatusException e) {
             if (e.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
-                statement.setStatus(ApplicationStatus.CC_DENIED);
+                statementStatusService.deny(statementId);
                 log.debug("Статус заявки {} изменён на CC_DENIED", statement.getStatementId());
             }
             throw e;
         }
 
         Credit credit = this.creditRepository.save(creditMapper.toEntity(creditDto));
-        clientMapper.updateEntity(finishDto, statement.getClient());
-        passportMapper.updateEntity(finishDto, statement.getClient().getPassport());
-
         log.debug("Кредитное предложение {} сохранено в БД", credit.getCreditId());
 
-        statement.setStatus(ApplicationStatus.CC_APPROVED);
-        statement.getStatusHistory().add(new StatusHistory(
-                ApplicationStatus.CC_APPROVED,
-                ChangeType.AUTOMATIC
-        ));
-
+        statement.changeStatus(ApplicationStatus.CC_APPROVED);
         log.debug("Статус заявки {} изменён на CC_APPROVED", statement.getStatementId());
     }
 }
