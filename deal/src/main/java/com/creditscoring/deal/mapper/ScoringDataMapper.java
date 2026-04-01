@@ -9,15 +9,15 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ScoringDataMapper {
 
-    @Mapping(target = "amount", expression = "java(statement.getAppliedOffer().requestedAmount())")
-    @Mapping(target = "term", expression = "java(statement.getAppliedOffer().term())")
-    @Mapping(target = "firstName", expression = "java(statement.getClient().getFirstName())")
-    @Mapping(target = "lastName", expression = "java(statement.getClient().getLastName())")
-    @Mapping(target = "middleName", expression = "java(statement.getClient().getMiddleName())")
-    @Mapping(target = "birthdate", expression = "java(statement.getClient().getBirthdate())")
-    @Mapping(target = "passportSeries", expression = "java(statement.getClient().getPassport().getSeries())")
-    @Mapping(target = "passportNumber", expression = "java(statement.getClient().getPassport().getNumber())")
-    @Mapping(target = "isInsuranceEnabled",expression = "java(statement.getAppliedOffer().isInsuranceEnabled())")
-    @Mapping(target = "isSalaryClient", expression = "java(statement.getAppliedOffer().isSalaryClient())")
-    ScoringDataDto toDto(Statement statement, FinishRegistrationRequestDto finishDto);
+    @Mapping(target = "amount", source = "statement.appliedOffer.requestedAmount")
+    @Mapping(target = "term", source = "statement.appliedOffer.term")
+    @Mapping(target = "firstName", source = "statement.client.firstName")
+    @Mapping(target = "lastName", source = "statement.client.lastName")
+    @Mapping(target = "middleName", source = "statement.client.middleName")
+    @Mapping(target = "birthdate", source = "statement.client.birthdate")
+    @Mapping(target = "passportSeries", source = "statement.client.passport.series")
+    @Mapping(target = "passportNumber", source = "statement.client.passport.number")
+    @Mapping(target = "isInsuranceEnabled",source = "statement.appliedOffer.isInsuranceEnabled")
+    @Mapping(target = "isSalaryClient", source = "statement.appliedOffer.isSalaryClient")
+    ScoringDataDto toScoringDataDto(Statement statement, FinishRegistrationRequestDto finishDto);
 }

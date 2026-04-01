@@ -12,7 +12,6 @@ import com.creditscoring.deal.enums.ChangeType;
 import com.creditscoring.deal.json.StatusHistory;
 import com.creditscoring.deal.mapper.*;
 import com.creditscoring.deal.repository.ClientRepository;
-import com.creditscoring.deal.repository.CreditRepository;
 import com.creditscoring.deal.repository.StatementRepository;
 import com.creditscoring.deal.utils.TestDataFactory;
 import jakarta.transaction.Transactional;
@@ -22,7 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
@@ -47,8 +45,6 @@ public class DealServiceTest {
     private ClientRepository clientRepository;
     @Autowired
     private StatementRepository statementRepository;
-    @Autowired
-    private CreditRepository creditRepository;
 
     @Autowired
     private ClientMapper clientMapper;
@@ -62,7 +58,7 @@ public class DealServiceTest {
     private ScoringDataMapper scoringDataMapper;
 
     @MockitoBean
-    private CalculatorClient calculatorClient;
+    private CalculatorRestClient calculatorRestClient;
 
     private void assertClientEquals(
             Client actual,
@@ -99,17 +95,17 @@ public class DealServiceTest {
                 .ignoringFields(
                         "creditId"
                 )
-                .isEqualTo(creditMapper.toEntity(expected));
+                .isEqualTo(creditMapper.toCreditEntity(expected));
     }
 
     @Test
     void saveStatementTest() {
         LoanStatementRequestDto dto = TestDataFactory.createLoanStatementDto().build();
-        when(calculatorClient.getOffers(dto)).thenReturn(List.of());
+        when(calculatorRestClient.getOffers(dto)).thenReturn(List.of());
 
         this.dealService.saveStatement(dto);
 
-        verify(calculatorClient).getOffers(dto);
+        verify(calculatorRestClient).getOffers(dto);
 
         Statement statement = statementRepository.findAll().getFirst();
 
@@ -133,7 +129,7 @@ public class DealServiceTest {
         Statement statementAfterUpdate = statementRepository.findAll().getFirst();
 
         assertThat(statementAfterUpdate.getAppliedOffer())
-                .isEqualTo(offerMapper.toEntityField(appliedOffer));
+                .isEqualTo(offerMapper.toAppliedOfferJson(appliedOffer));
 
         assertStatementStatuses(
                 statementAfterUpdate,
@@ -150,7 +146,7 @@ public class DealServiceTest {
                 .build();
 
         statement.setStatus(ApplicationStatus.APPROVED);
-        statement.setAppliedOffer(offerMapper.toEntityField(appliedOffer));
+        statement.setAppliedOffer(offerMapper.toAppliedOfferJson(appliedOffer));
         statement.getStatusHistory().add(new StatusHistory(
                 ApplicationStatus.APPROVED,
                 ChangeType.AUTOMATIC
@@ -164,20 +160,19 @@ public class DealServiceTest {
         Statement statement = createApprovedStatement();
 
         CreditDto creditDto = TestDataFactory.createCreditDto().build();
-        when(calculatorClient.getCredit(any())).thenReturn(creditDto);
+        when(calculatorRestClient.getCredit(any())).thenReturn(creditDto);
 
         FinishRegistrationRequestDto finishDto = TestDataFactory.createFinishRegistrationDto().build();
 
         this.dealService.calculateCredit(finishDto, statement.getStatementId());
 
-        verify(calculatorClient).getCredit(any());
+        verify(calculatorRestClient).getCredit(any());
 
-        Credit credit = creditRepository.findAll().getFirst();
-        assertCreditEquals(credit, creditDto);
+        assertCreditEquals(statement.getCredit(), creditDto);
 
         Client expectedClient = TestDataFactory.createClient().build();
-        clientMapper.updateEntity(finishDto, expectedClient);
-        passportMapper.updateEntity(finishDto, expectedClient.getPassport());
+        clientMapper.updateClientEntity(finishDto, expectedClient);
+        passportMapper.updatePassportEntity(finishDto, expectedClient.getPassport());
         assertClientEquals(statement.getClient(), expectedClient);
 
         assertStatementStatuses(
@@ -192,7 +187,7 @@ public class DealServiceTest {
     void calculateCreditTest_failure() {
         Statement statement = createApprovedStatement();
 
-        when(calculatorClient.getCredit(any()))
+        when(calculatorRestClient.getCredit(any()))
                 .thenThrow(new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY));
 
         FinishRegistrationRequestDto finishDto = TestDataFactory.createFinishRegistrationDto().build();
@@ -203,11 +198,11 @@ public class DealServiceTest {
 
         assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, ex.getStatusCode());
 
-        verify(calculatorClient).getCredit(any());
+        verify(calculatorRestClient).getCredit(any());
 
         Client expectedClient = TestDataFactory.createClient().build();
-        clientMapper.updateEntity(finishDto, expectedClient);
-        passportMapper.updateEntity(finishDto, expectedClient.getPassport());
+        clientMapper.updateClientEntity(finishDto, expectedClient);
+        passportMapper.updatePassportEntity(finishDto, expectedClient.getPassport());
         assertClientEquals(statement.getClient(), expectedClient);
 
         assertStatementStatuses(

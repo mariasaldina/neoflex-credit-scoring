@@ -10,7 +10,7 @@ import java.util.UUID;
 @Mapper(componentModel = "spring")
 public interface OfferMapper {
 
-    AppliedOffer toEntityField(LoanOfferDto dto);
+    AppliedOffer toAppliedOfferJson(LoanOfferDto dto);
 
     @Mapping(target = "statementId", source = "statementId")
     LoanOfferDto updateStatementId(LoanOfferDto source, UUID statementId);

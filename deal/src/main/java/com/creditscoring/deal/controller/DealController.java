@@ -29,7 +29,7 @@ public class DealController implements DealApi {
     }
 
     @PostMapping("/offer/select")
-    public ResponseEntity<?> selectOffer(
+    public ResponseEntity<Void> selectOffer(
             @Valid @RequestBody LoanOfferDto reqBody
     ) {
         this.dealService.selectOffer(reqBody);
@@ -37,7 +37,7 @@ public class DealController implements DealApi {
     }
 
     @PostMapping("/calculate/{statementId}")
-    public ResponseEntity<?> calculateCredit(
+    public ResponseEntity<Void> calculateCredit(
             @Valid @RequestBody FinishRegistrationRequestDto reqBody,
             @PathVariable UUID statementId
     ) {

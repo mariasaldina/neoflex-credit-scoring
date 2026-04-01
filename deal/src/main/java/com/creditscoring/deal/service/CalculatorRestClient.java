@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor
-public class CalculatorClient {
+public class CalculatorRestClient {
 
     private final RestClient restClient;
 

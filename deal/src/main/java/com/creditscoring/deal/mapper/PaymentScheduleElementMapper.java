@@ -7,5 +7,5 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface PaymentScheduleElementMapper {
 
-    PaymentScheduleElement toEntityField(PaymentScheduleElementDto dto);
+    PaymentScheduleElement toPaymentScheduleElementJson(PaymentScheduleElementDto dto);
 }

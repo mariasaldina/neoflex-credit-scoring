@@ -33,11 +33,19 @@ public class Statement {
         statusHistory.add(new StatusHistory(status, ChangeType.AUTOMATIC));
     }
 
+    public void applyOffer(AppliedOffer offer) {
+        changeStatus(ApplicationStatus.APPROVED);
+        this.appliedOffer = offer;
+    }
+
+    public void saveCredit(Credit credit) {
+        changeStatus(ApplicationStatus.CC_APPROVED);
+        this.credit = credit;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID statementId;
-
-    private UUID creditId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -60,4 +68,8 @@ public class Statement {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "credit_id")
+    private Credit credit;
 }

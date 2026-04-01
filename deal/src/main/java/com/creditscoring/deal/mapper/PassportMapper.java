@@ -12,11 +12,11 @@ public interface PassportMapper {
 
     @Mapping(target = "series", source = "passportSeries")
     @Mapping(target = "number", source = "passportNumber")
-    Passport toEntity(LoanStatementRequestDto dto);
+    Passport toPassportEntity(LoanStatementRequestDto dto);
 
     @Mapping(target = "issueDate", source = "passportIssueDate")
     @Mapping(target = "issueBranch", source = "passportIssueBranch")
-    void updateEntity(
+    void updatePassportEntity(
             FinishRegistrationRequestDto dto,
             @MappingTarget Passport passport
     );
