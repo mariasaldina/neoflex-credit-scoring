@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: deal
+
+  config:
+    import: "optional:file:.env[.properties]"
+  datasource:
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8081
+
+logging:
+  level:
+    root: INFO
+    com.creditscoring.deal: DEBUG
+    org.zalando.logbook: INFO
+
+logbook:
+  format:
+    style: json
+  include:
+    - /**
+  obfuscate:
+    json-body-fields:
+      - firstName
+      - lastName
+      - middleName
+      - passportSeries
+      - passportNumber
+
+calculator:
+  url: http://localhost:8080/calculator
