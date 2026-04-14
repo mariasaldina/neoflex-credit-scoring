@@ -2,6 +2,7 @@ package com.creditscoring.deal.advice;
 
 import com.creditscoring.deal.exception.ApplicationStatusConflictException;
 import com.creditscoring.deal.exception.StatementNotFoundException;
+import com.creditscoring.deal.exception.dto.ApiError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -20,14 +21,6 @@ import java.util.stream.Stream;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-    public record ApiError(
-            UUID id,
-            Integer status,
-            String message,
-            List<String> details,
-            Instant timestamp
-    ) {}
 
     private ApiError createApiError(HttpStatusCode status, String message, List<String> details) {
         return new ApiError(UUID.randomUUID(), status.value(), message, details, Instant.now());
@@ -81,8 +74,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(e.getStatusCode()).body(
                 createApiError(
                         e.getStatusCode(),
-                        e.getMessage(),
-                        e.getReason() != null ? List.of(e.getReason()) : List.of()
+                        e.getReason(),
+                        List.of()
                 )
         );
     }
@@ -95,7 +88,7 @@ public class GlobalExceptionHandler {
                 List.of(e.getMessage())
         );
 
-        log.error("INTERNAL SERVER ERROR [id: {}]: {}", apiError.id, e.getMessage(), e);
+        log.error("INTERNAL SERVER ERROR [id: {}]: {}", apiError.id(), e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
     }
 }

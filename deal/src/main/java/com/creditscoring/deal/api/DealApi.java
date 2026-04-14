@@ -1,9 +1,9 @@
 package com.creditscoring.deal.api;
 
-import com.creditscoring.deal.advice.GlobalExceptionHandler;
 import com.creditscoring.deal.dto.request.FinishRegistrationRequestDto;
 import com.creditscoring.deal.dto.request.LoanOfferDto;
 import com.creditscoring.deal.dto.request.LoanStatementRequestDto;
+import com.creditscoring.deal.exception.dto.ApiError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -25,7 +25,7 @@ import java.util.UUID;
                 description = "Ошибка валидации",
                 content = @Content(
                         mediaType = "application/json",
-                        schema = @Schema(implementation = GlobalExceptionHandler.ApiError.class)
+                        schema = @Schema(implementation = ApiError.class)
                 )
         ),
         @ApiResponse(
@@ -33,7 +33,7 @@ import java.util.UUID;
                 description = "Внутренняя ошибка сервера",
                 content = @Content(
                         mediaType = "application/json",
-                        schema = @Schema(implementation = GlobalExceptionHandler.ApiError.class)
+                        schema = @Schema(implementation = ApiError.class)
                 )
         )
 })
@@ -75,7 +75,7 @@ public interface DealApi {
                     description = "Заявка не найдена",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = GlobalExceptionHandler.ApiError.class)
+                            schema = @Schema(implementation = ApiError.class)
                     )
             ),
             @ApiResponse(
@@ -83,12 +83,12 @@ public interface DealApi {
                     description = "Статус заявки не позволяет изменить кредитное предложение",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = GlobalExceptionHandler.ApiError.class)
+                            schema = @Schema(implementation = ApiError.class)
                     )
             )
     })
     @PostMapping("/offer/select")
-    ResponseEntity<?> selectOffer(
+    ResponseEntity<Void> selectOffer(
             @Valid @RequestBody LoanOfferDto reqBody
     );
 
@@ -108,7 +108,7 @@ public interface DealApi {
                     description = "Заявка не найдена",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = GlobalExceptionHandler.ApiError.class)
+                            schema = @Schema(implementation = ApiError.class)
                     )
             ),
             @ApiResponse(
@@ -116,7 +116,7 @@ public interface DealApi {
                     description = "Не выбрано кредитное предложение",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = GlobalExceptionHandler.ApiError.class)
+                            schema = @Schema(implementation = ApiError.class)
                     )
             ),
             @ApiResponse(
@@ -124,12 +124,12 @@ public interface DealApi {
                     description = "Ошибка скоринга",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = GlobalExceptionHandler.ApiError.class)
+                            schema = @Schema(implementation = ApiError.class)
                     )
             )
     })
     @PostMapping("/calculate/{statementId}")
-    ResponseEntity<?> calculateCredit(
+    ResponseEntity<Void> calculateCredit(
             @Valid @RequestBody FinishRegistrationRequestDto reqBody,
             @PathVariable UUID statementId
     );

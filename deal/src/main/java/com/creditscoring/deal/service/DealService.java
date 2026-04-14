@@ -54,7 +54,9 @@ public class DealService {
 
     @Transactional
     public void selectOffer(LoanOfferDto appliedOffer) {
-        Statement statement = this.statementRepository.findById(appliedOffer.statementId()).orElseThrow(
+        Statement statement = this.statementRepository.findByStatementId(
+                appliedOffer.statementId()
+        ).orElseThrow(
                 () -> new StatementNotFoundException(appliedOffer.statementId())
         );
         if (statement.getStatus() != ApplicationStatus.PREAPPROVAL) {

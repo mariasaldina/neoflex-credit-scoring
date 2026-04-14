@@ -4,6 +4,8 @@ import com.creditscoring.deal.dto.calculator.response.CreditDto;
 import com.creditscoring.deal.dto.request.LoanOfferDto;
 import com.creditscoring.deal.dto.calculator.request.ScoringDataDto;
 import com.creditscoring.deal.dto.request.LoanStatementRequestDto;
+import com.creditscoring.deal.exception.dto.ApiError;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -19,17 +21,32 @@ import java.util.function.Supplier;
 public class CalculatorRestClient {
 
     private final RestClient restClient;
+    private final ObjectMapper objectMapper;
+
+    private ApiError extractApiError(RestClientResponseException e) {
+        try {
+            return objectMapper.readValue(
+                    e.getResponseBodyAsString(),
+                    ApiError.class
+            );
+        } catch (Exception mappingException) {
+            return null;
+        }
+    }
 
     private<T> T execute(Supplier<T> supplier) {
         try {
             return supplier.get();
         } catch (RestClientResponseException e) {
+            ApiError apiError = extractApiError(e);
+
             throw new ResponseStatusException(
                     e.getStatusCode(),
-                    e.getResponseBodyAsString()
+                    apiError != null ? apiError.message() : e.getStatusText()
             );
         }
     }
+
 
     public List<LoanOfferDto> getOffers(LoanStatementRequestDto reqBody) {
         return execute(() ->
