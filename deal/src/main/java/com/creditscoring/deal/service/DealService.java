@@ -12,6 +12,7 @@ import com.creditscoring.deal.exception.StatementNotFoundException;
 import com.creditscoring.deal.mapper.*;
 import com.creditscoring.deal.repository.ClientRepository;
 import com.creditscoring.deal.repository.StatementRepository;
+import com.creditscoring.deal.service.hook.LockHook;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,8 @@ public class DealService {
 
     private final CalculatorRestClient calculatorRestClient;
 
+    private final LockHook lockHook;
+
     @Transactional
     public List<LoanOfferDto> saveStatement(LoanStatementRequestDto statementDto) {
         Client client = this.clientRepository.save(clientMapper.toClientEntity(statementDto));
@@ -59,6 +62,11 @@ public class DealService {
         ).orElseThrow(
                 () -> new StatementNotFoundException(appliedOffer.statementId())
         );
+
+        log.debug("Обновляется заявка {}", statement.getStatementId());
+
+        lockHook.afterLockCaptured();
+
         if (statement.getStatus() != ApplicationStatus.PREAPPROVAL) {
             throw new ApplicationStatusConflictException(statement.getStatus(), ApplicationStatus.PREAPPROVAL);
         }
