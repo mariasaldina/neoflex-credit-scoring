@@ -22,7 +22,7 @@ public class StatementController implements StatementApi {
 
     private final StatementService statementService;
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<List<LoanOfferDto>> prescoring(
             @Valid @RequestBody LoanStatementRequestDto statementDto
     ) {
