@@ -1,12 +1,11 @@
-package com.creditscoring.deal.service;
+package com.creditscoring.statement.service;
 
-import com.creditscoring.deal.dto.calculator.response.CreditDto;
-import com.creditscoring.deal.dto.request.LoanOfferDto;
-import com.creditscoring.deal.dto.calculator.request.ScoringDataDto;
-import com.creditscoring.deal.dto.request.LoanStatementRequestDto;
-import com.creditscoring.deal.exception.dto.ApiError;
+import com.creditscoring.statement.dto.request.LoanStatementRequestDto;
+import com.creditscoring.statement.dto.LoanOfferDto;
+import com.creditscoring.statement.exception.ApiError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -16,9 +15,10 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.function.Supplier;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class CalculatorRestClient {
+public class StatementService {
 
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
@@ -30,6 +30,7 @@ public class CalculatorRestClient {
                     ApiError.class
             );
         } catch (Exception mappingException) {
+            log.debug("Не удалось обработать ошибку вызова МС Сделка");
             return null;
         }
     }
@@ -38,6 +39,8 @@ public class CalculatorRestClient {
         try {
             return supplier.get();
         } catch (RestClientResponseException e) {
+            log.debug("МС Сделка вернул ошибку: {}", e.getResponseBodyAsString());
+
             ApiError apiError = extractApiError(e);
 
             throw new ResponseStatusException(
@@ -47,26 +50,25 @@ public class CalculatorRestClient {
         }
     }
 
-
-    public List<LoanOfferDto> getOffers(LoanStatementRequestDto reqBody) {
+    public List<LoanOfferDto> prescoring(LoanStatementRequestDto statementDto) {
         return execute(() ->
                 restClient
                         .post()
-                        .uri("/offers")
-                        .body(reqBody)
+                        .uri("/statement")
+                        .body(statementDto)
                         .retrieve()
                         .body(new ParameterizedTypeReference<List<LoanOfferDto>>() {})
         );
     }
 
-    public CreditDto getCredit(ScoringDataDto reqBody) {
-        return execute(() ->
+    public void selectOffer(LoanOfferDto loanOfferDto) {
+        execute(() ->
                 restClient
                         .post()
-                        .uri("/calc")
-                        .body(reqBody)
+                        .uri("/offer/select")
+                        .body(loanOfferDto)
                         .retrieve()
-                        .body(CreditDto.class)
+                        .toBodilessEntity()
         );
     }
 }

@@ -1,8 +1,6 @@
-package com.creditscoring.deal.advice;
+package com.creditscoring.statement.advice;
 
-import com.creditscoring.deal.exception.ApplicationStatusConflictException;
-import com.creditscoring.deal.exception.StatementNotFoundException;
-import com.creditscoring.deal.exception.dto.ApiError;
+import com.creditscoring.statement.exception.ApiError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -26,13 +24,9 @@ public class GlobalExceptionHandler {
         return new ApiError(UUID.randomUUID(), status.value(), message, details, Instant.now());
     }
 
-    private ApiError createApiError(HttpStatusCode status, String message) {
-        return new ApiError(UUID.randomUUID(), status.value(), message, List.of(), Instant.now());
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApiError> handleValidationExceptions(MethodArgumentNotValidException e) {
+    public ApiError handleValidationExceptions(MethodArgumentNotValidException e) {
         List<String> fieldErrors = e.getBindingResult().getFieldErrors()
                 .stream()
                 .map(f -> f.getField() + ": " + f.getDefaultMessage())
@@ -46,27 +40,11 @@ public class GlobalExceptionHandler {
         List<String> errors = Stream.concat(fieldErrors.stream(), globalErrors.stream())
                 .toList();
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                createApiError(
-                    HttpStatus.BAD_REQUEST,
-                    "Ошибка валидации",
-                    errors
-                )
+        return createApiError(
+                HttpStatus.BAD_REQUEST,
+                "Ошибка прескоринга",
+                errors
         );
-    }
-
-    @ExceptionHandler(StatementNotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFoundExceptions(Exception e) {
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(createApiError(HttpStatus.NOT_FOUND, e.getMessage()));
-    }
-
-    @ExceptionHandler(ApplicationStatusConflictException.class)
-    public ResponseEntity<ApiError> handleConflictExceptions(Exception e) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(createApiError(HttpStatus.CONFLICT, e.getMessage()));
     }
 
     @ExceptionHandler(ResponseStatusException.class)
@@ -76,7 +54,7 @@ public class GlobalExceptionHandler {
                         e.getStatusCode(),
                         e.getReason(),
                         List.of()
-                )
+            )
         );
     }
 

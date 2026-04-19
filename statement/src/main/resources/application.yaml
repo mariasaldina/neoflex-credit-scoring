@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: statement
+
+server:
+  port: 8082
+
+deal:
+  url: http://localhost:8081/deal
+
+prescoring:
+  amount:
+    min: 20000
+    max: 10000000
+  term:
+    min: 6
+    max: 60
+  age:
+    min: 18
+    max: 75
+
+logging:
+  level:
+    root: INFO
+    com.creditscoring.statement: DEBUG
+    org.zalando.logbook: INFO
+
+logbook:
+  format:
+    style: json
+  include:
+    - /**
+  obfuscate:
+    json-body-fields:
+      - firstName
+      - lastName
+      - middleName
+      - passportSeries
+      - passportNumber
