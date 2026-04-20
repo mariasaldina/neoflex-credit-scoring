@@ -1,3 +1,44 @@
 spring:
   application:
     name: dossier
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: dossier-service
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.creditscoring.dossier
+
+    topics:
+      partitions: 3
+      replicas: 1
+      names:
+        - finish-registration
+        - create-documents
+        - send-documents
+        - send-ses
+        - credit-issued
+        - statement-denied
+
+server:
+  port: 8083
+
+logging:
+  level:
+    root: INFO
+    com.creditscoring.statement: DEBUG
+    org.zalando.logbook: INFO
+
+logbook:
+  format:
+    style: json
+  include:
+    - /**
+  obfuscate:
+    json-body-fields:
+      - firstName
+      - lastName
+      - middleName
+      - passportSeries
+      - passportNumber

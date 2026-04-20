@@ -2,6 +2,11 @@ spring:
   application:
     name: deal
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
   config:
     import: "optional:file:.env[.properties]"
   datasource:
