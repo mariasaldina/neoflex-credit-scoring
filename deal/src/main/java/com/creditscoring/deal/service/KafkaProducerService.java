@@ -2,7 +2,6 @@ package com.creditscoring.deal.service;
 
 import com.creditscoring.deal.dto.kafka.EmailMessage;
 import com.creditscoring.deal.enums.EmailTheme;
-import com.creditscoring.deal.properties.KafkaTopicProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -14,7 +13,6 @@ import java.util.UUID;
 public class KafkaProducerService {
 
     private final KafkaTemplate<String, EmailMessage> kafkaTemplate;
-    private final KafkaTopicProperties properties;
     private final EmailTextFactory emailTextFactory;
 
     public void send(String address, EmailTheme theme, UUID statementId) {
@@ -28,7 +26,6 @@ public class KafkaProducerService {
             UUID sesCode
     ) {
         String text = emailTextFactory.build(theme, statementId, sesCode);
-        String topic = properties.names().get(theme);
-        kafkaTemplate.send(topic, new EmailMessage(address, theme, statementId, text));
+        kafkaTemplate.send(theme.getTopic(), new EmailMessage(address, theme, statementId, text));
     }
 }

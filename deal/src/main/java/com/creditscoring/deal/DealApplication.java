@@ -1,9 +1,12 @@
 package com.creditscoring.deal;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
+@OpenAPIDefinition(info = @Info(title = "МС Сделка", version = "1.0"))
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class DealApplication {

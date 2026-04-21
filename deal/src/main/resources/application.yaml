@@ -7,19 +7,9 @@ spring:
     producer:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-    topics:
-      partitions: 3
-      replicas: 1
-      names:
-        FINISH_REGISTRATION: finish-registration
-        CREATE_DOCUMENTS: create-documents
-        SEND_DOCUMENTS: send-documents
-        SEND_SES: send-ses
-        CREDIT_ISSUED: credit-issued
-        STATEMENT_DENIED: statement-denied
-
   config:
     import: "optional:file:.env[.properties]"
+
   datasource:
     url: ${POSTGRES_URL}
     username: ${POSTGRES_USER}

@@ -1,6 +1,8 @@
 spring:
   application:
     name: dossier
+  config:
+    import: "optional:file:.env[.properties]"
 
   kafka:
     bootstrap-servers: localhost:9092
@@ -10,17 +12,22 @@ spring:
       properties:
         spring.json.trusted.packages: com.creditscoring.dossier
 
-    topics:
-      names:
-        - finish-registration
-        - create-documents
-        - send-documents
-        - send-ses
-        - credit-issued
-        - statement-denied
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_SMTP_USERNAME}
+    password: ${GMAIL_SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
 
 server:
   port: 8083
+
+deal:
+  url: http://localhost:8081/deal
 
 logging:
   level:

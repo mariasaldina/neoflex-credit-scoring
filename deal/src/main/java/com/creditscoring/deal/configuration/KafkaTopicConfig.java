@@ -1,6 +1,6 @@
 package com.creditscoring.deal.configuration;
 
-import com.creditscoring.deal.properties.KafkaTopicProperties;
+import com.creditscoring.deal.enums.EmailTheme;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
@@ -8,20 +8,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.KafkaAdmin;
 
+import java.util.Arrays;
+
 @Configuration
 @RequiredArgsConstructor
 public class KafkaTopicConfig {
 
-    private final KafkaTopicProperties properties;
-
     @Bean
     public KafkaAdmin.NewTopics createTopics() {
         return new KafkaAdmin.NewTopics(
-                properties.names().values().stream()
-                        .map(name -> TopicBuilder
-                                .name(name)
-                                .partitions(properties.partitions())
-                                .replicas(properties.replicas())
+                Arrays.stream(EmailTheme.values())
+                        .map(theme -> TopicBuilder
+                                .name(theme.getTopic())
+                                .partitions(3)
+                                .replicas(1)
                                 .build())
                         .toArray(NewTopic[]::new)
         );
