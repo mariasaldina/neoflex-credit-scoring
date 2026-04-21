@@ -1,6 +1,7 @@
 package com.creditscoring.deal.advice;
 
 import com.creditscoring.deal.exception.ApplicationStatusConflictException;
+import com.creditscoring.deal.exception.InvalidSesCodeException;
 import com.creditscoring.deal.exception.StatementNotFoundException;
 import com.creditscoring.deal.exception.dto.ApiError;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +68,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(createApiError(HttpStatus.CONFLICT, e.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidSesCodeException.class)
+    public ResponseEntity<ApiError> handleInvalidSesCodeException(Exception e) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(createApiError(HttpStatus.FORBIDDEN, e.getMessage()));
     }
 
     @ExceptionHandler(ResponseStatusException.class)

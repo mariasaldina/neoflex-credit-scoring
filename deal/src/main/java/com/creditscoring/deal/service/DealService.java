@@ -7,6 +7,7 @@ import com.creditscoring.deal.dto.request.FinishRegistrationRequestDto;
 import com.creditscoring.deal.dto.request.LoanStatementRequestDto;
 import com.creditscoring.deal.entity.*;
 import com.creditscoring.deal.enums.ApplicationStatus;
+import com.creditscoring.deal.enums.EmailTheme;
 import com.creditscoring.deal.exception.ApplicationStatusConflictException;
 import com.creditscoring.deal.exception.StatementNotFoundException;
 import com.creditscoring.deal.mapper.*;
@@ -38,6 +39,7 @@ public class DealService {
     private final ScoringDataMapper scoringDataMapper;
 
     private final CalculatorRestClient calculatorRestClient;
+    private final KafkaProducerService producer;
 
     private final LockHook lockHook;
 
@@ -78,6 +80,12 @@ public class DealService {
                 statement.getStatementId(),
                 appliedOffer.isInsuranceEnabled(),
                 appliedOffer.isSalaryClient());
+
+        producer.send(
+                statement.getClient().getEmail(),
+                EmailTheme.FINISH_REGISTRATION,
+                statement.getStatementId()
+        );
     }
 
     @Transactional(noRollbackFor = ResponseStatusException.class)
@@ -95,19 +103,39 @@ public class DealService {
         passportMapper.updatePassportEntity(finishDto, statement.getClient().getPassport());
         log.debug("Данные клиента {} обновлены", statement.getClient().getClientId());
 
-        CreditDto creditDto;
         try {
-            creditDto = this.calculatorRestClient.getCredit(scoringDataDto);
+            CreditDto creditDto = this.calculatorRestClient.getCredit(scoringDataDto);
+            statement.saveCredit(creditMapper.toCreditEntity(creditDto));
+
+            log.debug("Кредитное предложение {} сохранено в БД", statement.getCredit().getCreditId());
+            log.debug("Статус заявки {} изменён на CC_APPROVED", statement.getStatementId());
+
+            producer.send(
+                    statement.getClient().getEmail(),
+                    EmailTheme.CREATE_DOCUMENTS,
+                    statementId
+            );
         } catch (ResponseStatusException e) {
             if (e.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
                 statement.changeStatus(ApplicationStatus.CC_DENIED);
+
                 log.debug("Статус заявки {} изменён на CC_DENIED", statement.getStatementId());
+
+                producer.send(
+                        statement.getClient().getEmail(),
+                        EmailTheme.STATEMENT_DENIED,
+                        statementId
+                );
             }
             throw e;
         }
+    }
 
-        statement.saveCredit(creditMapper.toCreditEntity(creditDto));
-        log.debug("Кредитное предложение {} сохранено в БД", statement.getCredit().getCreditId());
-        log.debug("Статус заявки {} изменён на CC_APPROVED", statement.getStatementId());
+    @Transactional
+    public void changeStatus(UUID statementId, ApplicationStatus status) {
+        Statement statement = this.statementRepository.findById(statementId).orElseThrow(
+                () -> new StatementNotFoundException(statementId)
+        );
+        statement.setStatus(status);
     }
 }

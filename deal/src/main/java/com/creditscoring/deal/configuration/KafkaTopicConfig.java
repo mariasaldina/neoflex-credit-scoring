@@ -1,6 +1,6 @@
-package com.creditscoring.dossier.configuration;
+package com.creditscoring.deal.configuration;
 
-import com.creditscoring.dossier.properties.KafkaTopicProperties;
+import com.creditscoring.deal.properties.KafkaTopicProperties;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +17,7 @@ public class KafkaTopicConfig {
     @Bean
     public KafkaAdmin.NewTopics createTopics() {
         return new KafkaAdmin.NewTopics(
-                properties.names().stream()
+                properties.names().values().stream()
                         .map(name -> TopicBuilder
                                 .name(name)
                                 .partitions(properties.partitions())
