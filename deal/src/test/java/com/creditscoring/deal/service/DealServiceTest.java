@@ -147,7 +147,7 @@ public class DealServiceTest {
                 .statementId(statement.getStatementId())
                 .build();
 
-        statement.changeStatus(ApplicationStatus.APPROVED);
+        statement.setStatus(ApplicationStatus.APPROVED);
         statement.setAppliedOffer(offerMapper.toAppliedOfferJson(appliedOffer));
         statement.getStatusHistory().add(new StatusHistory(
                 ApplicationStatus.APPROVED,

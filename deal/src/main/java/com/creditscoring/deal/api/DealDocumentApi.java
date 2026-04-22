@@ -64,13 +64,13 @@ public interface DealDocumentApi {
 
     @Operation(
             summary = "Согласие на подписание документов",
-            description = "Сохраняет код сессии в заявку, " +
-                    "запрашивает отправку письма с кодом сессии и ссылкой для подписания документов"
+            description = "Сохраняет код подтверждения в заявку, " +
+                    "запрашивает отправку письма с кодом и ссылкой для подписания документов"
     )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "204",
-                    description = "Выдан код сессии, создан запрос на отправку письма"
+                    description = "Выдан код подтверждения, создан запрос на отправку письма"
             )
     })
     @PostMapping("/sign")
@@ -79,18 +79,18 @@ public interface DealDocumentApi {
     );
 
     @Operation(
-            summary = "Проверка кода сессии и выдача кредита",
+            summary = "Проверка кода подтверждения и выдача кредита",
             description = "Меняет статус заявки на DOCUMENTS_SIGNED, затем CREDIT_ISSUED, " +
                     "запрашивает отправку письма, оповещающего об успешной выдаче кредита"
     )
     @ApiResponses({
             @ApiResponse(
                     responseCode = "204",
-                    description = "Код сессии прошел проверку, кредит одобрен"
+                    description = "Код подтверждения прошел проверку, кредит одобрен"
             ),
             @ApiResponse(
                     responseCode = "403",
-                    description = "Код сессии не совпал с сохраненным в заявке",
+                    description = "Код подтверждения не совпал с сохраненным в заявке",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ApiError.class)

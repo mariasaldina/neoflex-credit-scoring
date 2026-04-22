@@ -139,10 +139,6 @@ public class DealService {
         Statement statement = this.statementRepository.findById(statementId).orElseThrow(
                 () -> new StatementNotFoundException(statementId)
         );
-        if (statement.getStatus() == ApplicationStatus.CREDIT_ISSUED) {
-            throw new ApplicationStatusConflictException();
-        }
-
         statement.changeStatus(dto.status(), dto.changeType());
     }
 }
