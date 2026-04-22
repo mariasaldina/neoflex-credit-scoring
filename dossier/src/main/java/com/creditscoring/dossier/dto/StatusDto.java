@@ -1,7 +1,9 @@
 package com.creditscoring.dossier.dto;
 
 import com.creditscoring.dossier.enums.ApplicationStatus;
+import com.creditscoring.dossier.enums.ChangeType;
 
 public record StatusDto(
-        ApplicationStatus status
+        ApplicationStatus status,
+        ChangeType changeType
 ) { }

@@ -26,6 +26,14 @@ import java.util.UUID;
                 )
         ),
         @ApiResponse(
+                responseCode = "409",
+                description = "Статус заявки не позволяет выполнить действие",
+                content = @Content(
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = ApiError.class)
+                )
+        ),
+        @ApiResponse(
                 responseCode = "500",
                 description = "Внутренняя ошибка сервера",
                 content = @Content(
@@ -55,7 +63,7 @@ public interface DealDocumentApi {
     );
 
     @Operation(
-            summary = "Согласие на подпись документов",
+            summary = "Согласие на подписание документов",
             description = "Сохраняет код сессии в заявку, " +
                     "запрашивает отправку письма с кодом сессии и ссылкой для подписания документов"
     )
@@ -79,6 +87,14 @@ public interface DealDocumentApi {
             @ApiResponse(
                     responseCode = "204",
                     description = "Код сессии прошел проверку, кредит одобрен"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Код сессии не совпал с сохраненным в заявке",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ApiError.class)
+                    )
             )
     })
     @PostMapping("/code")

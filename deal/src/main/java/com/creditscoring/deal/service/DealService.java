@@ -5,6 +5,7 @@ import com.creditscoring.deal.dto.request.LoanOfferDto;
 import com.creditscoring.deal.dto.calculator.request.ScoringDataDto;
 import com.creditscoring.deal.dto.request.FinishRegistrationRequestDto;
 import com.creditscoring.deal.dto.request.LoanStatementRequestDto;
+import com.creditscoring.deal.dto.request.StatusDto;
 import com.creditscoring.deal.entity.*;
 import com.creditscoring.deal.enums.ApplicationStatus;
 import com.creditscoring.deal.enums.EmailTheme;
@@ -43,6 +44,20 @@ public class DealService {
 
     private final LockHook lockHook;
 
+    private Statement getStatement(UUID statementId, ApplicationStatus expectedStatus) {
+        Statement statement = this.statementRepository.findByStatementId(statementId)
+                .orElseThrow(() -> new StatementNotFoundException(statementId));
+
+        if (statement.getStatus() != expectedStatus) {
+            throw new ApplicationStatusConflictException(
+                    statement.getStatus(),
+                    expectedStatus
+            );
+        }
+
+        return statement;
+    }
+
     @Transactional
     public List<LoanOfferDto> saveStatement(LoanStatementRequestDto statementDto) {
         Client client = this.clientRepository.save(clientMapper.toClientEntity(statementDto));
@@ -59,19 +74,13 @@ public class DealService {
 
     @Transactional
     public void selectOffer(LoanOfferDto appliedOffer) {
-        Statement statement = this.statementRepository.findByStatementId(
-                appliedOffer.statementId()
-        ).orElseThrow(
-                () -> new StatementNotFoundException(appliedOffer.statementId())
+        Statement statement = this.getStatement(
+                appliedOffer.statementId(),
+                ApplicationStatus.PREAPPROVAL
         );
-
         log.debug("Обновляется заявка {}", statement.getStatementId());
 
         lockHook.afterLockCaptured();
-
-        if (statement.getStatus() != ApplicationStatus.PREAPPROVAL) {
-            throw new ApplicationStatusConflictException(statement.getStatus(), ApplicationStatus.PREAPPROVAL);
-        }
 
         statement.applyOffer(offerMapper.toAppliedOfferJson(appliedOffer));
 
@@ -90,13 +99,7 @@ public class DealService {
 
     @Transactional(noRollbackFor = ResponseStatusException.class)
     public void calculateCredit(FinishRegistrationRequestDto finishDto, UUID statementId) {
-        Statement statement = this.statementRepository.findById(statementId).orElseThrow(
-                () -> new StatementNotFoundException(statementId)
-        );
-        if (statement.getStatus() != ApplicationStatus.APPROVED) {
-            throw new ApplicationStatusConflictException(statement.getStatus(), ApplicationStatus.APPROVED);
-        }
-
+        Statement statement = this.getStatement(statementId, ApplicationStatus.APPROVED);
         ScoringDataDto scoringDataDto = scoringDataMapper.toScoringDataDto(statement, finishDto);
 
         clientMapper.updateClientEntity(finishDto, statement.getClient());
@@ -132,10 +135,14 @@ public class DealService {
     }
 
     @Transactional
-    public void changeStatus(UUID statementId, ApplicationStatus status) {
+    public void changeStatus(UUID statementId, StatusDto dto) {
         Statement statement = this.statementRepository.findById(statementId).orElseThrow(
                 () -> new StatementNotFoundException(statementId)
         );
-        statement.setStatus(status);
+        if (statement.getStatus() == ApplicationStatus.CREDIT_ISSUED) {
+            throw new ApplicationStatusConflictException();
+        }
+
+        statement.changeStatus(dto.status(), dto.changeType());
     }
 }

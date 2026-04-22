@@ -10,7 +10,8 @@ spring:
       group-id: dossier-service
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: com.creditscoring.dossier
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.creditscoring.dossier.dto.EmailMessage
 
   mail:
     host: smtp.gmail.com
@@ -32,7 +33,7 @@ deal:
 logging:
   level:
     root: INFO
-    com.creditscoring.statement: DEBUG
+    com.creditscoring.dossier: DEBUG
     org.zalando.logbook: INFO
 
 logbook:

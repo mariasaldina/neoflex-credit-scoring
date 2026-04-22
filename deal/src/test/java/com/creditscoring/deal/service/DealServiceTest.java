@@ -59,6 +59,8 @@ public class DealServiceTest {
 
     @MockitoBean
     private CalculatorRestClient calculatorRestClient;
+    @MockitoBean
+    private KafkaProducerService producer;
 
     private void assertClientEquals(
             Client actual,
@@ -145,7 +147,7 @@ public class DealServiceTest {
                 .statementId(statement.getStatementId())
                 .build();
 
-        statement.setStatus(ApplicationStatus.APPROVED);
+        statement.changeStatus(ApplicationStatus.APPROVED);
         statement.setAppliedOffer(offerMapper.toAppliedOfferJson(appliedOffer));
         statement.getStatusHistory().add(new StatusHistory(
                 ApplicationStatus.APPROVED,

@@ -1,20 +1,19 @@
 package com.creditscoring.dossier.service;
 
 import com.creditscoring.dossier.dto.EmailMessage;
-import com.creditscoring.dossier.dto.StatusDto;
-import com.creditscoring.dossier.enums.ApplicationStatus;
 import com.creditscoring.dossier.enums.EmailTheme;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailConsumerService {
 
     private final EmailService emailService;
-    private final RestClient restClient;
+    private final DealRestClient dealRestClient;
 
     @KafkaListener(topics = {
             "finish-registration",
@@ -25,16 +24,11 @@ public class EmailConsumerService {
             "statement-denied"
     })
     public void consume(EmailMessage message) {
+        log.debug("Считано сообщение для заявки {} со статусом {}", message.statementId(), message.theme());
         if (message.theme() == EmailTheme.SEND_DOCUMENTS) {
             // формирование документов
-            restClient
-                    .put()
-                    .uri("/admin/statement/%s/status".formatted(message.statementId()))
-                    .body(new StatusDto(ApplicationStatus.DOCUMENTS_CREATED))
-                    .retrieve()
-                    .toBodilessEntity();
+            dealRestClient.setStatusDocumentsCreated(message.statementId());
         }
-
         emailService.sendEmail(message);
     }
 }

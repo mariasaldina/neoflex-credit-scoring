@@ -47,4 +47,4 @@ calculator:
   url: http://localhost:8080/calculator
 
 email:
-  base-url: http://localhost:8083
+  base-url: http://localhost:8081
