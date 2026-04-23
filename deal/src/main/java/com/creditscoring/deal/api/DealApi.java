@@ -37,7 +37,6 @@ import java.util.UUID;
                 )
         )
 })
-@RestController
 @RequestMapping("/deal")
 public interface DealApi {
 

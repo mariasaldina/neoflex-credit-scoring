@@ -1,11 +1,18 @@
+server:
+  port: ${SERVER_PORT:8083}
+
+deal:
+  url: ${DEAL_URL:http://localhost:8081/deal}
+
 spring:
   application:
     name: dossier
+
   config:
     import: "optional:file:.env[.properties]"
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
       group-id: dossier-service
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
@@ -14,21 +21,15 @@ spring:
         spring.json.value.default.type: com.creditscoring.dossier.dto.EmailMessage
 
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${GMAIL_SMTP_USERNAME}
-    password: ${GMAIL_SMTP_PASSWORD}
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
           auth: true
           starttls.enable: true
-
-server:
-  port: 8083
-
-deal:
-  url: http://localhost:8081/deal
 
 logging:
   level:

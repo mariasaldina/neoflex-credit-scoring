@@ -42,7 +42,6 @@ import java.util.UUID;
                 )
         )
 })
-@RestController
 @RequestMapping("/deal/document/{statementId}")
 public interface DealDocumentApi {
 
