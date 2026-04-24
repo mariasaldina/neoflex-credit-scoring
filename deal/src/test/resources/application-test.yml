@@ -9,4 +9,4 @@ spring:
       ddl-auto: create-drop
 
 kafka:
-  enabled: true
+  enabled: false
