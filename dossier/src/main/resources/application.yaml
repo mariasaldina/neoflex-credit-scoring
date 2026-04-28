@@ -1,0 +1,51 @@
+server:
+  port: ${SERVER_PORT:8083}
+
+deal:
+  url: ${DEAL_URL:http://localhost:8081/deal}
+
+spring:
+  application:
+    name: dossier
+
+  config:
+    import: "optional:file:.env[.properties]"
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: dossier-service
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.use.type.headers: false
+        spring.json.value.default.type: com.creditscoring.dossier.dto.EmailMessage
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
+
+logging:
+  level:
+    root: INFO
+    com.creditscoring.dossier: DEBUG
+    org.zalando.logbook: INFO
+
+logbook:
+  format:
+    style: json
+  include:
+    - /**
+  obfuscate:
+    json-body-fields:
+      - firstName
+      - lastName
+      - middleName
+      - passportSeries
+      - passportNumber

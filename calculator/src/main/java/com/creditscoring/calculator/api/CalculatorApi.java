@@ -40,7 +40,6 @@ import java.util.List;
                 )
         )
 })
-@RestController
 @RequestMapping("/calculator")
 public interface CalculatorApi {
 

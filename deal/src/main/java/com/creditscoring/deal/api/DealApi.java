@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@Tag(name = "МС Сделка", description = "Сохранение данных о клиенте и заявке")
+@Tag(name = "Создание заявки", description = "Сохранение данных о клиенте и заявке")
 @ApiResponses({
         @ApiResponse(
                 responseCode = "400",
@@ -37,7 +37,6 @@ import java.util.UUID;
                 )
         )
 })
-@RestController
 @RequestMapping("/deal")
 public interface DealApi {
 

@@ -1,6 +1,10 @@
+server:
+  port: ${SERVER_PORT:8080}
+
 spring:
   application:
     name: calculator
+
 logging:
   level:
     root: INFO

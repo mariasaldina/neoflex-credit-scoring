@@ -4,6 +4,7 @@ import com.creditscoring.deal.dto.calculator.response.CreditDto;
 import com.creditscoring.deal.dto.request.FinishRegistrationRequestDto;
 import com.creditscoring.deal.dto.request.LoanOfferDto;
 import com.creditscoring.deal.dto.request.LoanStatementRequestDto;
+import com.creditscoring.deal.dto.request.StatusDto;
 import com.creditscoring.deal.entity.Client;
 import com.creditscoring.deal.entity.Credit;
 import com.creditscoring.deal.entity.Statement;
@@ -59,6 +60,8 @@ public class DealServiceTest {
 
     @MockitoBean
     private CalculatorRestClient calculatorRestClient;
+    @MockitoBean
+    private KafkaProducerService producer;
 
     private void assertClientEquals(
             Client actual,
@@ -210,6 +213,28 @@ public class DealServiceTest {
                 ApplicationStatus.PREAPPROVAL,
                 ApplicationStatus.APPROVED,
                 ApplicationStatus.CC_DENIED
+        );
+    }
+
+    @Test
+    void changeStatus_test() {
+        Statement statement = statementRepository.save(new Statement());
+        ApplicationStatus status = ApplicationStatus.CREDIT_ISSUED;
+        ChangeType changeType = ChangeType.MANUAL;
+
+        dealService.changeStatus(
+                statement.getStatementId(),
+                new StatusDto(status, changeType)
+        );
+
+        assertEquals(status, statement.getStatus());
+        assertEquals(
+                status,
+                statement.getStatusHistory().getLast().status()
+        );
+        assertEquals(
+                changeType,
+                statement.getStatusHistory().getLast().changeType()
         );
     }
 }

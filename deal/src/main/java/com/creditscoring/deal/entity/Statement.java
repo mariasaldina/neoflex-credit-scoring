@@ -2,6 +2,7 @@ package com.creditscoring.deal.entity;
 
 import com.creditscoring.deal.enums.ApplicationStatus;
 import com.creditscoring.deal.enums.ChangeType;
+import com.creditscoring.deal.enums.CreditStatus;
 import com.creditscoring.deal.json.AppliedOffer;
 import com.creditscoring.deal.json.StatusHistory;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
@@ -29,8 +30,12 @@ public class Statement {
     }
 
     public void changeStatus(ApplicationStatus status) {
+        this.changeStatus(status, ChangeType.AUTOMATIC);
+    }
+
+    public void changeStatus(ApplicationStatus status, ChangeType changeType) {
         this.status = status;
-        statusHistory.add(new StatusHistory(status, ChangeType.AUTOMATIC));
+        statusHistory.add(new StatusHistory(status, changeType));
     }
 
     public void applyOffer(AppliedOffer offer) {
@@ -41,6 +46,12 @@ public class Statement {
     public void saveCredit(Credit credit) {
         changeStatus(ApplicationStatus.CC_APPROVED);
         this.credit = credit;
+    }
+
+    public void sign() {
+        this.signDate = LocalDateTime.now();
+        this.credit.setCreditStatus(CreditStatus.ISSUED);
+        changeStatus(ApplicationStatus.CREDIT_ISSUED);
     }
 
     @Id

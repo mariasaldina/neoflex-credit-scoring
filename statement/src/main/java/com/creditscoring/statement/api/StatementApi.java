@@ -37,7 +37,6 @@ import java.util.List;
                 )
         )
 })
-@RestController
 @RequestMapping("/statement")
 public interface StatementApi {
 

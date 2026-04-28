@@ -1,9 +1,24 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+calculator:
+  url: ${CALCULATOR_URL:http://localhost:8080/calculator}
+
+email:
+  base-url: ${EMAIL_BASE_URL:http://localhost:8081}
+
 spring:
   application:
     name: deal
 
   config:
     import: "optional:file:.env[.properties]"
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
   datasource:
     url: ${POSTGRES_URL}
     username: ${POSTGRES_USER}
@@ -14,9 +29,6 @@ spring:
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
-
-server:
-  port: 8081
 
 logging:
   level:
@@ -37,5 +49,15 @@ logbook:
       - passportSeries
       - passportNumber
 
-calculator:
-  url: http://localhost:8080/calculator
+kafka:
+  enabled: true
+  topics:
+    partitions: 3
+    replicas: 1
+    names:
+      FINISH_REGISTRATION: finish-registration
+      CREATE_DOCUMENTS: create-documents
+      SEND_DOCUMENTS: send-documents
+      SEND_SES: send-ses
+      CREDIT_ISSUED: credit-issued
+      STATEMENT_DENIED: statement-denied

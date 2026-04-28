@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Arrays;
 import java.util.concurrent.*;
@@ -33,6 +34,9 @@ public class DealServiceConcurrencyTest {
     private ClientRepository clientRepository;
     @Autowired
     private StatementRepository statementRepository;
+
+    @MockitoBean
+    private KafkaProducerService producer;
 
     @Test
     void selectOfferConcurrentTest() throws InterruptedException, ExecutionException {
