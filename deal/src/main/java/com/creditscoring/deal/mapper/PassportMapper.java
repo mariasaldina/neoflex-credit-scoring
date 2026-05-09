@@ -2,6 +2,7 @@ package com.creditscoring.deal.mapper;
 
 import com.creditscoring.deal.dto.request.FinishRegistrationRequestDto;
 import com.creditscoring.deal.dto.request.LoanStatementRequestDto;
+import com.creditscoring.deal.dto.response.PassportDto;
 import com.creditscoring.deal.entity.Passport;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,4 +21,6 @@ public interface PassportMapper {
             FinishRegistrationRequestDto dto,
             @MappingTarget Passport passport
     );
+
+    PassportDto toPassportDto(Passport passport);
 }

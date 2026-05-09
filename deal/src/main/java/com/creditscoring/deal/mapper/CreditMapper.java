@@ -12,4 +12,6 @@ public interface CreditMapper {
     @Mapping(target = "salaryClient", source = "isSalaryClient")
     @Mapping(target = "creditStatus", constant = "CALCULATED")
     Credit toCreditEntity(CreditDto dto);
+
+    CreditDto toCreditDto(Credit credit);
 }

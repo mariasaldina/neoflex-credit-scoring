@@ -1,6 +1,7 @@
 package com.creditscoring.deal.api;
 
 import com.creditscoring.deal.dto.request.StatusDto;
+import com.creditscoring.deal.dto.response.StatementDto;
 import com.creditscoring.deal.exception.dto.ApiError;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -9,11 +10,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Инструменты для работы с заявкой", description = "Получение заявки и изменение её статуса")
@@ -35,7 +34,7 @@ import java.util.UUID;
                 )
         )
 })
-@RequestMapping("/deal/admin/statement/{statementId}")
+@RequestMapping("/deal/admin/statement")
 public interface DealAdminApi {
 
     @Operation(
@@ -48,9 +47,37 @@ public interface DealAdminApi {
                     description = "Статус заявки изменён"
             )
     })
-    @PutMapping("/status")
+    @PutMapping("/{statementId}/status")
     ResponseEntity<Void> updateStatus(
             @RequestBody StatusDto statusDto,
             @PathVariable UUID statementId
     );
+
+    @Operation(
+            summary = "Получение заявки",
+            description = "Возвращает заявку"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Заявка получена"
+            )
+    })
+    @GetMapping("/{statementId}")
+    ResponseEntity<StatementDto> getStatement(
+            @PathVariable UUID statementId
+    );
+
+    @Operation(
+            summary = "Получение всех заявок",
+            description = "Возвращает все заявки"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Заявки получены"
+            )
+    })
+    @GetMapping
+    ResponseEntity<List<StatementDto>> getAllStatements();
 }

@@ -6,6 +6,7 @@ import com.creditscoring.deal.dto.calculator.request.ScoringDataDto;
 import com.creditscoring.deal.dto.request.FinishRegistrationRequestDto;
 import com.creditscoring.deal.dto.request.LoanStatementRequestDto;
 import com.creditscoring.deal.dto.request.StatusDto;
+import com.creditscoring.deal.dto.response.StatementDto;
 import com.creditscoring.deal.entity.*;
 import com.creditscoring.deal.enums.ApplicationStatus;
 import com.creditscoring.deal.enums.EmailTheme;
@@ -38,6 +39,7 @@ public class DealService {
     private final OfferMapper offerMapper;
     private final CreditMapper creditMapper;
     private final ScoringDataMapper scoringDataMapper;
+    private final StatementMapper statementMapper;
 
     private final CalculatorRestClient calculatorRestClient;
     private final KafkaProducerService producer;
@@ -140,5 +142,19 @@ public class DealService {
                 () -> new StatementNotFoundException(statementId)
         );
         statement.changeStatus(dto.status(), dto.changeType());
+    }
+
+    public StatementDto getStatement(UUID statementId) {
+        return statementMapper.toStatementDto(
+                this.statementRepository.findById(statementId).orElseThrow(
+                    () -> new StatementNotFoundException(statementId)
+            )
+        );
+    }
+
+    public List<StatementDto> getAllStatements() {
+        return this.statementRepository.findAll().stream()
+                .map(statementMapper::toStatementDto)
+                .toList();
     }
 }
