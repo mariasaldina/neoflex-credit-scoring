@@ -1,21 +1,22 @@
 package com.creditscoring.gateway.service;
 
 import com.creditscoring.gateway.dto.LoanOfferDto;
+import com.creditscoring.gateway.dto.request.FinishRegistrationRequestDto;
 import com.creditscoring.gateway.dto.request.LoanStatementRequestDto;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
+import java.util.UUID;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StatementService {
 
     private final RestClient statementClient;
+    private final RestClient dealClient;
 
     public List<LoanOfferDto> createStatement(LoanStatementRequestDto dto) {
         return statementClient
@@ -26,5 +27,21 @@ public class StatementService {
                 .body(new ParameterizedTypeReference<List<LoanOfferDto>>() {});
     }
 
+    public void selectOffer(LoanOfferDto dto) {
+        statementClient
+                .post()
+                .uri("/statement/offer")
+                .body(dto)
+                .retrieve()
+                .toBodilessEntity();
+    }
 
+    public void finishRegistration(FinishRegistrationRequestDto dto, UUID statementId) {
+        dealClient
+                .post()
+                .uri("/deal/calculate/{statementId}", statementId)
+                .body(dto)
+                .retrieve()
+                .toBodilessEntity();
+    }
 }

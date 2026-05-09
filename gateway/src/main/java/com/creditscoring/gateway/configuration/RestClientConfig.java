@@ -1,6 +1,6 @@
 package com.creditscoring.gateway.configuration;
 
-import com.creditscoring.gateway.exception.ApiError;
+import com.creditscoring.gateway.dto.exception.ApiError;
 import com.creditscoring.gateway.exception.ExternalApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -8,11 +8,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.server.ResponseStatusException;
 import org.zalando.logbook.Logbook;
 import org.zalando.logbook.spring.LogbookClientHttpRequestInterceptor;
 
