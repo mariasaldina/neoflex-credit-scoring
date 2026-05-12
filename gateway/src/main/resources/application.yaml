@@ -1,0 +1,12 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: gateway
+
+deal:
+  url: http://localhost:8081
+
+statement:
+  url: http://localhost:8082
