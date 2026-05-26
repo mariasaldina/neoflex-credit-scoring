@@ -21,7 +21,7 @@ public class StatementService {
     public List<LoanOfferDto> createStatement(LoanStatementRequestDto dto) {
         return statementClient
                 .post()
-                .uri("/statement")
+                .uri("")
                 .body(dto)
                 .retrieve()
                 .body(new ParameterizedTypeReference<List<LoanOfferDto>>() {});
@@ -30,7 +30,7 @@ public class StatementService {
     public void selectOffer(LoanOfferDto dto) {
         statementClient
                 .post()
-                .uri("/statement/offer")
+                .uri("/offer")
                 .body(dto)
                 .retrieve()
                 .toBodilessEntity();
@@ -39,7 +39,7 @@ public class StatementService {
     public void finishRegistration(FinishRegistrationRequestDto dto, UUID statementId) {
         dealClient
                 .post()
-                .uri("/deal/calculate/{statementId}", statementId)
+                .uri("/calculate/{statementId}", statementId)
                 .body(dto)
                 .retrieve()
                 .toBodilessEntity();

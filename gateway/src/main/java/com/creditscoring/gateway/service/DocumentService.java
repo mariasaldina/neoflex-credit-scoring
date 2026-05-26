@@ -16,7 +16,7 @@ public class DocumentService {
     public void sendSendDocumentRequest(UUID statementId) {
         dealClient
                 .post()
-                .uri("/deal/document/{statementId}/send", statementId)
+                .uri("/document/{statementId}/send", statementId)
                 .retrieve()
                 .toBodilessEntity();
     }
@@ -24,7 +24,7 @@ public class DocumentService {
     public void sendSignDocumentsRequest(UUID statementId) {
         dealClient
                 .post()
-                .uri("/deal/document/{statementId}/sign", statementId)
+                .uri("/document/{statementId}/sign", statementId)
                 .retrieve()
                 .toBodilessEntity();
     }
@@ -32,7 +32,7 @@ public class DocumentService {
     public void signDocuments(UUID statementId, CodeDto dto) {
         dealClient
                 .post()
-                .uri("/deal/document/{statementId}/code", statementId)
+                .uri("/document/{statementId}/code", statementId)
                 .body(dto)
                 .retrieve()
                 .toBodilessEntity();
