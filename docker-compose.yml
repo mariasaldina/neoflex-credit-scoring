@@ -30,8 +30,10 @@ services:
     ports:
       - 5433:5432
     user: postgres
-    env_file:
-      - ./deal/.env.docker
+    environment:
+      POSTGRES_DB: credit_scoring
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:
@@ -42,7 +44,8 @@ services:
 
   calculator:
     build:
-      context: ./calculator
+      context: .
+      dockerfile: calculator/Dockerfile
     container_name: calculator
     ports:
       - 8080:8080
@@ -51,22 +54,27 @@ services:
 
   deal:
     build:
-      context: ./deal
+      context: .
+      dockerfile: deal/Dockerfile
     container_name: deal
     ports:
       - 8081:8081
     environment:
       EMAIL_BASE_URL: http://deal:8081
+      POSTGRES_DB: credit_scoring
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+      POSTGRES_URL: jdbc:postgresql://postgres:5432/credit_scoring
     env_file:
       - .env.docker
-      - ./deal/.env.docker
     depends_on:
       postgres:
         condition: service_healthy
 
   statement:
     build:
-      context: ./statement
+      context: .
+      dockerfile: statement/Dockerfile
     container_name: statement
     ports:
       - 8082:8082
@@ -75,7 +83,8 @@ services:
 
   dossier:
     build:
-      context: ./dossier
+      context: .
+      dockerfile: dossier/Dockerfile
     container_name: dossier
     ports:
       - 8083:8083
@@ -88,7 +97,8 @@ services:
 
   gateway:
     build:
-      context: ./gateway
+      context: .
+      dockerfile: gateway/Dockerfile
     container_name: gateway
     ports:
       - 8084:8084

@@ -20,9 +20,9 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
   datasource:
-    url: ${POSTGRES_URL}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5433/credit_scoring}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:pass}
   jpa:
     hibernate:
       ddl-auto: validate
