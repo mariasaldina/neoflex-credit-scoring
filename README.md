@@ -1,15 +1,15 @@
 [![Coverage Status](https://coveralls.io/repos/github/mariasaldina/neoflex-credit-scoring/badge.svg?branch=feature/MVP-6)](https://coveralls.io/github/mariasaldina/neoflex-credit-scoring?branch=feature/MVP-6)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mariasaldina_mariasaldina_neoflex-credit-scoring&metric=alert_status&token=473d6d72fd61761e1e12c458fa8466c3a8ce8487)](https://sonarcloud.io/summary/new_code?id=mariasaldina_mariasaldina_neoflex-credit-scoring)
 
-### Конвейер кредитного скоринга
+## Конвейер кредитного скоринга
 
 Учебное приложение для автоматизированного анализа кредитных заявок, выдачи и подписания кредитных договоров.
 
-## Стек
+### Стек
 
 Java 21 + Spring Boot 3.5.14
 
-## Архитектура:
+### Архитектура:
 
 Приложение имеет микросервисную архитектуру:
 
@@ -19,19 +19,23 @@ Java 21 + Spring Boot 3.5.14
 - **calculator**: сервис скоринга заявок, принимающий решение о выдаче кредита / отказе
 - **dossier**: клиент Kafka, управляющий отправкой электронных писем пользователю
 
-Сервисы deal и dossier зависят от Kafka. deal зависит от PostgreSQL.
+**Важно**:
+- deal и dossier имеют runtime-зависимость от Kafka
+- deal имеет runtime-зависимость от PostgreSQL
 
-Адреса сервисов для запуска с docker-compose указаны в ./env.docker, их можно изменить, другие микросервисы подхватят их автоматически (при запуске в контейнере).
+### Запуск
 
-## Запуск
+Доступно 3 режима запуска:
 
-1. На хосте:
+1. Микросервисы — на хосте, Kafka и PostgreSQL — в docker-контейнерах:
 
-- Запустить контейнеры kafka и postgres из docker-compose.yml.
+- Запустить контейнеры kafka и postgres: `docker compose up kafka postgres`
 - Запустить каждый микросервис командой `./mvnw spring-boot:run`
 
-*Примечание*: можно переопределить параметры POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD контейнера postgres.
-Потребуется создать .env в deal/ с обновленными переменными для подключения к БД, например:
+*Примечание*: можно переопределить параметры `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` контейнера postgres.
+Потребуется создать ./deal/.env с обновленными переменными для подключения к БД.
+
+Пример:
 
 ```bash
 POSTGRES_URL=<your_url>
@@ -40,9 +44,25 @@ POSTGRES_PASSWORD=<your_password>
 POSTGRES_DB=<your_db>
 ```
 
-2. docker-compose: запустить в корне проекта:
+2. Запуск всего приложения через docker-compose:
+   
+Запустить в корне проекта: `docker compose up --build`
 
-`docker compose up --build`
+*Примечание*: можно переопределить параметры `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` контейнера postgres.
+Потребуется изменить соответствующие параметры контейнера deal (см. пункт 1).
 
-*Примечание*: можно переопределить параметры POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD контейнера postgres.
-Потребуется изменить соответствующие параметры контейнера deal.
+3. Запуск всего приложения на хосте
+
+- Запустить Kafka, при необходимости переопределить KAFKA_BOOTSTRAP_SERVERS в ./deal/.env, ./dossier/.env
+- Создать БД PostgreSQL и настроить подключение к ней: добавить ./deal/.env (см. пункт 1)
+- Запустить каждый микросервис командой `./mvnw spring-boot:run`
+
+### Переменные окружения
+
+.env.docker в корне проекта используется как дефолтный набор переменных для docker compose.
+Это публичный файл, он не содержит секретов.
+**Важно:** используется только при запуске в Docker, не предназначен для конфигурации локальных запусков.
+
+Переменные конкретных сервисов задаются отдельно:
+- при запуске в Docker — через environment или env_file
+- при запуске на хосте — через файл <service>/.env, который подхватывается приложением
