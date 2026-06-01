@@ -61,7 +61,6 @@ services:
       - 8081:8081
     environment:
       EMAIL_BASE_URL: http://deal:8081
-      POSTGRES_DB: credit_scoring
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pass
       POSTGRES_URL: jdbc:postgresql://postgres:5432/credit_scoring

@@ -31,6 +31,17 @@ Java 21 + Spring Boot 3.5.14
 
 ### Запуск
 
+**Важно**: для запуска dossier необходимо создать файл ./dossier/.env и указать параметры подключения к SMTP-серверу.
+
+Пример (данные MAIL_HOST и MAIL_PORT указаны по умолчанию в application.yml):
+
+```bash
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your_username
+MAIL_PASSWORD=your_password
+```
+
 Доступно 3 режима запуска:
 
 1. Микросервисы — на хосте, Kafka и PostgreSQL — в docker-контейнерах:
@@ -47,7 +58,6 @@ Java 21 + Spring Boot 3.5.14
 POSTGRES_URL=<your_url>
 POSTGRES_USER=<your_user>
 POSTGRES_PASSWORD=<your_password>
-POSTGRES_DB=<your_db>
 ```
 
 2. Запуск всего приложения через docker-compose:
